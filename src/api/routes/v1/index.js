@@ -1,7 +1,7 @@
 const express = require('express');
 
 // import all the routes here
-const userRoutes = require('./user.route');
+const treeRoutes = require('./tree.route');
 
 const router = express.Router();
 
@@ -10,6 +10,6 @@ const router = express.Router();
  */
 router.get('/status', (req, res) => res.send('OK'));
 
-router.use('/user', userRoutes);
+router.use('/tree', treeRoutes);
 
 module.exports = router;

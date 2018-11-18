@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const responses = require('../services/response.service');
 const logger = require('../utils/logger');
-const constants = require('../../constants/constants.common');
+const constants = require('../../constants');
 
 const admin = require('firebase-admin');
 
@@ -18,7 +18,7 @@ module.exports = (req, res, next) => {
     .verifyIdToken(idToken)
     .then((decodedToken) => {
       const uid = decodedToken;
-      logger.log(uid);
+      console.log(uid);
       next();
     })
     .catch((error) => {

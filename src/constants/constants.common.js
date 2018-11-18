@@ -24,8 +24,13 @@ module.exports = {
     uri: process.env.DB_URI,
     database: process.env.DB_DB_NAME,
     collections: {
-      user: process.env.DB_USER_COLLECTION,
+      tree: process.env.DB_TREE_COLLECTION,
     },
+  },
+  treeHealth: {
+    healthy: 'healthy',
+    activeWeak: 'active but weak',
+    almostDead: 'almost dead',
   },
   firebase: {
     firebaseServiceAccount: {
