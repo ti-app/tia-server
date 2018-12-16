@@ -13,6 +13,7 @@
         "variables": false
       }
     ],
+    "class-methods-use-this":"off",
     "no-multi-str": 0,
     "indent": ["warn", 2],
     "arrow-parens": "off",

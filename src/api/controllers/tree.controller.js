@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { TreeService } = require('../services/tree.service');
+const TreeService = require('../services/tree.service');
 // const responseService = require('../services/response.service');
 
 exports.createTree = (req, res, next) => {

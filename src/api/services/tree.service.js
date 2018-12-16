@@ -1,13 +1,13 @@
 const repository = require('../repository');
 
 class TreeService {
-  static create(tree) {
-    repository.addNewTree(tree);
+  createMultiple(trees) {
+    return repository.addNewTree(trees);
   }
 
-  static allTrees() {
-    return repository.allTrees();
+  allTrees() {
+    return repository.fetchAllTrees();
   }
 }
 
-module.exports = { TreeService };
+module.exports = new TreeService();
