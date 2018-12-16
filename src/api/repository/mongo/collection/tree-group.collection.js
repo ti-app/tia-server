@@ -6,17 +6,17 @@ const setDatabase = (_db) => {
   db = _db;
 };
 
-const addNewTree = (tree) =>
+const addNewTreeGroup = async (treeGroup) =>
   new Promise(async (resolve, reject) => {
-    db.collection(database.collections.tree)
-      .insertMany(tree)
+    db.collection(database.collections.treeGroup)
+      .insertOne(treeGroup)
       .then(resolve)
       .catch(reject);
   });
 
-const fetchAllTrees = () =>
+const fetchAllTreeGroups = () =>
   new Promise(async (resolve, reject) => {
-    db.collection(database.collections.tree)
+    db.collection(database.collections.treeGroup)
       .find({})
       .toArray()
       .then(resolve)
@@ -24,8 +24,8 @@ const fetchAllTrees = () =>
   });
 
 const queries = {
-  addNewTree,
-  fetchAllTrees,
+  addNewTreeGroup,
+  fetchAllTreeGroups,
 };
 
 module.exports = { queries, setDatabase };

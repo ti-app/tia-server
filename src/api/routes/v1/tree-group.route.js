@@ -1,8 +1,8 @@
 const express = require('express');
 const validate = require('express-validation');
 
-const controller = require('../../controllers/tree.controller');
-const validation = require('../../validations/tree.validation');
+const controller = require('../../controllers/tree-group.controller');
+const validation = require('../../validations/tree-group.validation');
 const authenticated = require('../../middlewares/authenticated');
 
 const router = express.Router();
