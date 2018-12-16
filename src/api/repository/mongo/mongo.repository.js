@@ -28,6 +28,7 @@ const connect = () =>
     connectionPromise = new Promise(() => {
       MongoClient.connect(
         database.uri,
+        { useNewUrlParser: true },
         (err, client) => {
           if (err) {
             connectionInProgress = false; // unsetting the flag
