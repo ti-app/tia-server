@@ -1,8 +1,6 @@
 const express = require('express');
-const validate = require('express-validation');
 
 const controller = require('../../controllers/tree.controller');
-const validation = require('../../validations/tree.validation');
 const authenticated = require('../../middlewares/authenticated');
 
 const router = express.Router();
@@ -14,7 +12,7 @@ const router = express.Router();
 // protected route
 // router.route('/greet-me-protected').get(authenticated, validate(validation.me), contrroueteroller.me);
 
-router.route('/add').post(authenticated, validate(validation.tree), controller.createTree);
+// router.route('/add').post(authenticated, validate(validation.tree), controller.createTree);
 
 router.route('/').get(authenticated, controller.allTrees);
 

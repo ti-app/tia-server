@@ -6,13 +6,10 @@ const setDatabase = (_db) => {
   db = _db;
 };
 
-const addNewTreeGroup = async (treeGroup) =>
-  new Promise(async (resolve, reject) => {
-    db.collection(database.collections.treeGroup)
-      .insertOne(treeGroup)
-      .then(resolve)
-      .catch(reject);
-  });
+const addNewTreeGroup = async (treeGroup) => {
+  const addedTreeGroup = await db.collection(database.collections.treeGroup).insertOne(treeGroup);
+  return addedTreeGroup;
+};
 
 const fetchAllTreeGroups = () =>
   new Promise(async (resolve, reject) => {

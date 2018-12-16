@@ -13,7 +13,6 @@ module.exports = {
   },
   treeGroup: {
     body: Joi.object({
-      userId: Joi.string().required(),
       health: Joi.string()
         .valid(allowedHealth)
         .required(),

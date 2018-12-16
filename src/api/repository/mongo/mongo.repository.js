@@ -55,4 +55,5 @@ const connect = () =>
 
 module.exports = {
   ...treeCollection.queries,
+  ...treeGroupCollection.queries,
 };

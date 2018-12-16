@@ -14,7 +14,9 @@ const router = express.Router();
 // protected route
 // router.route('/greet-me-protected').get(authenticated, validate(validation.me), contrroueteroller.me);
 
-// router.route('/add').post(authenticated, validate(validation.treeGroup), controller.createTree);
+router
+  .route('/add')
+  .post(authenticated, validate(validation.treeGroup), controller.createTreeGroup);
 
 // router.route('/').get(authenticated, controller.allTrees);
 
