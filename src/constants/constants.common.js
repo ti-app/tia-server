@@ -25,6 +25,7 @@ module.exports = {
     database: process.env.DB_DB_NAME,
     collections: {
       tree: process.env.DB_TREE_COLLECTION,
+      treeGroup: process.env.DB_TREE_COLLECTION,
     },
   },
   treeHealth: {
