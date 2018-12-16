@@ -6,7 +6,7 @@ class TreeService {
   }
 
   static allTrees() {
-    return repository.allTrees();
+    return repository.fetchAllTrees();
   }
 }
 
