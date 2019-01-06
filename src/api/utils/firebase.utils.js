@@ -7,7 +7,7 @@ const getFirebaseUidFromToken = (idToken) => {
     .verifyIdToken(idToken)
     .then((decodedToken) => {
       const uid = decodedToken;
-      console.log(uid);
+      // console.log(uid);
       return uid;
     })
     .catch((error) => {

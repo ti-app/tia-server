@@ -10,13 +10,6 @@ module.exports = {
     query: {
       name: Joi.string().required(),
     },
-    // you can write validations for body and param as well
-    // body: {
-    //     name: Joi.string().required(),
-    // },
-    // param: {
-    //     name: Joi.string().required(),
-    // },
   },
   tree: {
     body: Joi.object({
@@ -30,6 +23,15 @@ module.exports = {
         lng: Joi.string().required(),
       }).required(),
       plants: Joi.number().required(),
+    }),
+  },
+  location: {
+    body: Joi.object({
+      location: Joi.object({
+        lat: Joi.string().required(),
+        lng: Joi.string().required(),
+      }).required(),
+      distance: Joi.number(),
     }),
   },
 };

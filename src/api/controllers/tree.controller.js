@@ -24,3 +24,29 @@ exports.allTrees = (req, res, next) => {
     next(e);
   }
 };
+
+exports.allTreesLocation = (req, res, next) => {
+  const { location } = req.body;
+  const { lng } = location;
+  const { lat } = location;
+  try {
+    TreeService.allTreesLocation(lng, lat).then((allTrees) =>
+      res.status(httpStatus.OK).json(allTrees)
+    );
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.allTreesByLocation = (req, res, next) => {
+  const { location, distance } = req.body;
+  const currentLocation = location;
+  const radius = distance;
+  try {
+    TreeService.allTreesByLocation(currentLocation, radius).then((allTrees) =>
+      res.status(httpStatus.OK).json(allTrees)
+    );
+  } catch (e) {
+    next(e);
+  }
+};

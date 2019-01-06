@@ -1,4 +1,6 @@
 const express = require('express');
+const validate = require('express-validation');
+const validation = require('../../validations/tree.validation');
 
 const controller = require('../../controllers/tree.controller');
 const authenticated = require('../../middlewares/authenticated');
@@ -15,5 +17,9 @@ const router = express.Router();
 // router.route('/add').post(authenticated, validate(validation.tree), controller.createTree);
 
 router.route('/').get(authenticated, controller.allTrees);
+
+router
+  .route('/bound')
+  .post(authenticated, validate(validation.location), controller.allTreesLocation);
 
 module.exports = router;

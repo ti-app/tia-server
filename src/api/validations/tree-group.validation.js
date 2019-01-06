@@ -18,8 +18,10 @@ module.exports = {
         .required(),
       photos: Joi.array().items(Joi.string()),
       location: Joi.object({
-        lat: Joi.string().required(),
-        lng: Joi.string().required(),
+        type: 'Point',
+        coordinates: Joi.array().items(Joi.number()),
+        // lat: Joi.string().required(),
+        // lng: Joi.string().required(),
       }).required(),
       plants: Joi.number().required(),
     }),
