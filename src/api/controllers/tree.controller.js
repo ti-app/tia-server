@@ -26,11 +26,11 @@ exports.allTrees = (req, res, next) => {
 };
 
 exports.allTreesLocation = (req, res, next) => {
-  const { location } = req.body;
+  const { location, distance } = req.body;
   const { lng } = location;
   const { lat } = location;
   try {
-    TreeService.allTreesLocation(lng, lat).then((allTrees) =>
+    TreeService.allTreesLocation(lng, lat, distance).then((allTrees) =>
       res.status(httpStatus.OK).json(allTrees)
     );
   } catch (e) {

@@ -29,8 +29,8 @@ class TreeService {
     return repository.fetchAllTrees();
   }
 
-  allTreesLocation(lng, lat) {
-    return repository.fetchAllTreesByLocation(lng, lat);
+  allTreesLocation(lng, lat, distance) {
+    return repository.fetchAllTreesByLocation(lng, lat, distance);
   }
 
   allTreesByLocation(location, radius = 1) {

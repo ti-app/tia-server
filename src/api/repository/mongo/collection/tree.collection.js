@@ -16,17 +16,16 @@ const addNewTree = (tree) =>
 
 const fetchAllTrees = () =>
   new Promise(async (resolve, reject) => {
-    db.collection(database.collections.tree)
+    db.collection(database.collections.treeGroup)
       .find({})
       .toArray()
       .then(resolve)
       .catch(reject);
   });
 
-const fetchAllTreesByLocation = (lng, lat) =>
+const fetchAllTreesByLocation = (lng, lat, distance) =>
   new Promise(async (resolve, reject) => {
-    console.log('lat and long', lat, lng);
-    db.collection(database.collections.tree)
+    db.collection(database.collections.treeGroup)
       .aggregate([
         {
           $geoNear: {
@@ -34,14 +33,11 @@ const fetchAllTreesByLocation = (lng, lat) =>
               type: 'Point',
               coordinates: [parseFloat(lng), parseFloat(lat)],
             },
-            distanceField: 'distance',
-            maxDistance: 1,
+            distanceField: 'dist.calculated',
+            maxDistance: distance,
+            includeLocs: 'dist.location',
             spherical: true,
-            query: { 'loc.type': 'Point' },
           },
-        },
-        {
-          $sort: { distance: -1 }, // Sort the nearest first
         },
       ])
       .toArray()

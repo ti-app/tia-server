@@ -22,10 +22,6 @@ exports.createTreeGroup = async (req, res, next) => {
     const numTrees = treeGroup.plants;
     const trees = [];
     for (let i = 0; i < numTrees; i += 1) {
-      // const geoHash = {
-      //   type: 'point',
-      //   coordinates: [treeGroup.lng, treeGroup.lat],
-      // };
       const aTreeToAdd = Object.assign({}, treeGroup);
       delete aTreeToAdd._id;
       delete aTreeToAdd.plants;
