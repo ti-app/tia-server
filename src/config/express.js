@@ -35,8 +35,8 @@ app.use(helmet());
 // origin is undefined when request is local
 // ! You might want to remove this in prod
 app.use((req, res, next) => {
-    req.headers.origin = req.headers.origin || req.headers.host;
-    next();
+  req.headers.origin = req.headers.origin || req.headers.host;
+  next();
 });
 app.use(cors(corsOptions));
 

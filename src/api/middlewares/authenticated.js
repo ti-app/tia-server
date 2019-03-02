@@ -3,6 +3,8 @@ const responses = require('../services/response.service');
 const logger = require('../utils/logger');
 const constants = require('../../constants');
 
+const { getFirebaseUidFromToken } = require('../utils/firebase.utils');
+
 const admin = require('firebase-admin');
 
 admin.initializeApp({
@@ -13,18 +15,17 @@ admin.initializeApp({
 module.exports = (req, res, next) => {
   const idToken = req.headers['x-id-token'];
 
-  admin
-    .auth()
-    .verifyIdToken(idToken)
-    .then((decodedToken) => {
-      const uid = decodedToken;
-      console.log(uid);
+  getFirebaseUidFromToken(idToken)
+    .then((uid) => {
+      logger.info('isAuthenticated', uid);
+      req.uid = uid;
       next();
     })
     .catch((error) => {
       logger.error(error);
       return res.status(httpStatus.UNAUTHORIZED).json(responses.unAuthorized());
     });
+
   /**
    * If the incoming request contains proper cookies,
    * 'passport' module will parse the cookies and put the
