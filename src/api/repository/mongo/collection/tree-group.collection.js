@@ -2,29 +2,38 @@ const { database } = require('../../../../constants');
 
 let db = null;
 
+const TREE_GROUP_COLLECTION = database.collections.treeGroup;
+
 const setDatabase = async (_db) => {
   db = _db;
-  const collecttionResult = await db.createCollection(database.collections.treeGroup);
-  await db.collection(database.collections.treeGroup).createIndex({ location: '2dsphere' });
+  await db.createCollection(TREE_GROUP_COLLECTION);
+  await db.collection(TREE_GROUP_COLLECTION).createIndex({ location: '2dsphere' });
 };
 
 const addNewTreeGroup = async (treeGroup) => {
-  const addedTreeGroup = await db.collection(database.collections.treeGroup).insertOne(treeGroup);
+  const addedTreeGroup = await db.collection(TREE_GROUP_COLLECTION).insertOne(treeGroup);
   return addedTreeGroup;
 };
 
-const fetchAllTreeGroups = () =>
-  new Promise(async (resolve, reject) => {
-    db.collection(database.collections.treeGroup)
-      .find({})
-      .toArray()
-      .then(resolve)
-      .catch(reject);
-  });
+const addTreesToGroup = async (treeIds, groupId) => {
+  try {
+    const result = await db.collection(TREE_GROUP_COLLECTION).updateOne(
+      {
+        _id: groupId,
+      },
+      {
+        $set: { treeIds },
+      }
+    );
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
 
 const queries = {
   addNewTreeGroup,
-  fetchAllTreeGroups,
+  addTreesToGroup,
 };
 
 module.exports = { queries, setDatabase };

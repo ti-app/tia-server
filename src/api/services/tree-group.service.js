@@ -5,8 +5,8 @@ class TreeGroupService {
     return repository.addNewTreeGroup(treeGroup);
   }
 
-  allTreeGroups() {
-    return repository.fetchAllTreeGroups();
+  addTreesToGroup(treeIds, groupId) {
+    return repository.addTreesToGroup(treeIds, groupId);
   }
 }
 

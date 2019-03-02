@@ -6,7 +6,7 @@ module.exports = new winston.Logger({
       timestamp: true,
       colorize: true,
       prettyPrint: true,
-      label: 'api-structure',
+      label: 'TIA',
     }),
   ],
 });

@@ -13,7 +13,7 @@ const middleware = () =>
     },
     // Make sure you override this value so that cookies
     // saved by the backend does not have default 'connect.sid' name
-    name: 'api-structure',
+    name: 'tia',
     // To enable user sessions across server restarts.
     // For more stable persistance storage, you might want to use redis or mongodb
     store: new FileStore({

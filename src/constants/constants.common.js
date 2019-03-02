@@ -30,7 +30,7 @@ module.exports = {
   },
   treeHealth: {
     healthy: 'healthy',
-    activeWeak: 'activeWeak',
+    activeWeak: 'weak',
     almostDead: 'almostDead',
   },
   firebase: {

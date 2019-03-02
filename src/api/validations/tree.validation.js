@@ -5,12 +5,6 @@ const toArry = require('../utils/to-array');
 const allowedHealth = toArry(treeHealth);
 
 module.exports = {
-  // POST /v1/user/greet-me?name=<some_name>
-  me: {
-    query: {
-      name: Joi.string().required(),
-    },
-  },
   tree: {
     body: Joi.object({
       userId: Joi.string().required(),
@@ -25,13 +19,12 @@ module.exports = {
       plants: Joi.number().required(),
     }),
   },
-  location: {
-    body: Joi.object({
-      location: Joi.object({
-        lat: Joi.string().required(),
-        lng: Joi.string().required(),
-      }).required(),
-      distance: Joi.number(),
-    }),
+  get: {
+    query: {
+      lat: Joi.string().required(),
+      lng: Joi.string().required(),
+      radius: Joi.number().required(),
+      health: Joi.string(),
+    },
   },
 };

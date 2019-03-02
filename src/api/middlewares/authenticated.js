@@ -18,6 +18,7 @@ module.exports = (req, res, next) => {
   getFirebaseUidFromToken(idToken)
     .then((uid) => {
       logger.info('isAuthenticated', uid);
+      req.uid = uid;
       next();
     })
     .catch((error) => {
