@@ -4,8 +4,10 @@ const TREE_COLLECTION_NAME = database.collections.tree;
 
 let db = null;
 
-const setDatabase = (_db) => {
+const setDatabase = async (_db) => {
   db = _db;
+  await db.createCollection(TREE_COLLECTION_NAME);
+  await db.collection(TREE_COLLECTION_NAME).createIndex({ location: '2dsphere' });
 };
 
 const addNewTrees = (tree) =>
