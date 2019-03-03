@@ -23,3 +23,13 @@ exports.allTreesByLocation = async (req, res, next) => {
     next(e);
   }
 };
+
+exports.waterByPlantID = async (req, res, next) => {
+  const { treeID } = req.params;
+  try {
+    const updatedTree = await TreeService.updateTreeHealthByID(treeID);
+    res.status(httpStatus.OK).json(updatedTree);
+  } catch (e) {
+    next(e);
+  }
+};

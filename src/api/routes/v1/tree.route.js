@@ -9,4 +9,6 @@ const router = express.Router();
 router.route('/').get(controller.allTrees);
 // router.route('/').get(controller.allTrees);
 
+router.route('/water/:treeID').get(controller.waterByPlantID);
+
 module.exports = router;

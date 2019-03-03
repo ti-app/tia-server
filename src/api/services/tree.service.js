@@ -12,6 +12,9 @@ class TreeService {
   allTreesByLocation(lng, lat, distance) {
     return repository.fetchAllTreesByLocation(lng, lat, distance);
   }
+  updateTreeHealthByID(treeID) {
+    return repository.updateTreeAfterWatering(treeID);
+  }
 }
 
 module.exports = new TreeService();

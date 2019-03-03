@@ -15,6 +15,9 @@ const multer = Multer({
   },
 });
 
+/**
+ * multer middleware is used to create a file reference
+ */
 router.route('/').post(multer.single('photo'), controller.createTreeGroup);
 
 module.exports = router;
