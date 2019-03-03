@@ -43,9 +43,12 @@ jobs:
             gcloud --quiet container clusters get-credentials ${GOOGLE_CLUSTER_NAME}
       - setup_remote_docker
       - run: 
+          name: "Setup custom environment variables"
+          command: |
+            echo $DB_URI
+      - run: 
           name: Docker build and push
           command: |
-          echo $DB_URI
             docker build \
               --build-arg COMMIT_REF=${CIRCLE_SHA1} \
               --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
