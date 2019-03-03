@@ -16,7 +16,8 @@ RUN npm install -g pm2
 RUN npm install
 
 COPY . /app/
-ENV DB_URI=${DB_URI} \
+ENV APP_BUILD_DATE=${BUILD_DATE} \
+    DB_URI=${DB_URI} \
     DB_DB_NAME=${DB_DB_NAME} \
     DB_TREE_COLLECTION=${DB_TREE_COLLECTION} \
     TYPE=${TYPE} \
@@ -32,7 +33,7 @@ ENV DB_URI=${DB_URI} \
     DATABASE_URL=${DATABASE_URL} \
     SESSION_SECRET=${SESSION_SECRET}
 
-RUN echo $DB_URI
+RUN echo $APP_BUILD_DATE
 # ADD init.sh .
 # RUN chmod +x init.sh
 # ENTRYPOINT ["./init.sh"]
