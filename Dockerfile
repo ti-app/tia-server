@@ -12,9 +12,9 @@ WORKDIR /app
 
 ADD package.json  /app/
 
-RUN npm install -g pm2
-RUN npm install
-RUN echo ${DB_URI}
+# RUN npm install -g pm2
+# RUN npm install
+
 COPY . /app/
 ENV DB_URI=${DB_URI} \
     DB_DB_NAME=${DB_DB_NAME} \
@@ -32,7 +32,7 @@ ENV DB_URI=${DB_URI} \
     DATABASE_URL=${DATABASE_URL} \
     SESSION_SECRET=${SESSION_SECRET}
 
-
+RUN echo $DB_URI
 # ADD init.sh .
 # RUN chmod +x init.sh
 # ENTRYPOINT ["./init.sh"]
