@@ -12,8 +12,8 @@ WORKDIR /app
 
 ADD package.json  /app/
 
-# RUN npm install -g pm2
-# RUN npm install
+RUN npm install -g pm2
+RUN npm install
 
 COPY . /app/
 ENV DB_URI=${DB_URI} \
