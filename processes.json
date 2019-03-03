@@ -4,8 +4,8 @@
       "name": "eic-api",
       "script": "./src/index.js",
       "merge_logs": true,
-      "max_restarts": 20,
-      "instances": "2",
+      "max_restarts": 1,
+      "instances": "1",
       "exec_mode": "cluster",
       "max_memory_restart": "200M",
       "env": {
