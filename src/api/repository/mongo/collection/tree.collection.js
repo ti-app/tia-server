@@ -1,4 +1,5 @@
 const { database } = require('../../../../constants');
+const { ObjectID } = require('mongodb');
 
 const TREE_COLLECTION_NAME = database.collections.tree;
 
@@ -78,10 +79,27 @@ const fetchAllTreesByLocation = (lng, lat, distance) =>
       .catch(reject);
   });
 
+const updateTreeAfterWatering = async (treeID) => {
+  try {
+    const updatedTree = await db.collection(database.collections.tree).updateOne(
+      {
+        _id: ObjectID(treeID),
+      },
+      {
+        $set: { health: 'healthy' },
+      }
+    );
+    return updatedTree;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const queries = {
   addNewTrees,
   fetchAllTrees,
   fetchAllTreesByLocation,
+  updateTreeAfterWatering,
 };
 
 module.exports = { queries, setDatabase };
