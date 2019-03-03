@@ -27,14 +27,18 @@ const fetchAllTrees = (lat, lng, radius, health) => {
         coordinates: [parseFloat(lng), parseFloat(lat)],
       },
       distanceField: 'dist.calculated',
-      maxDistance: radius,
+      maxDistance: parseInt(radius, 10),
       includeLocs: 'dist.location',
       spherical: true,
     },
   };
 
   const matchOperator = {
-    $match: { health },
+    $match: {
+      health: {
+        $in: health.split(','),
+      },
+    },
   };
 
   const aggregationPipeline = [geoNearOperator];
