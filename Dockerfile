@@ -38,4 +38,4 @@ RUN echo $APP_BUILD_DATE
 # RUN chmod +x init.sh
 # ENTRYPOINT ["./init.sh"]
 # cmd to start service
-CMD ["pm2-runtime", "start", "processes.json"]
+CMD ["npm", "start"]
