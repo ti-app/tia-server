@@ -52,12 +52,15 @@ jobs:
             docker build \
               --build-arg COMMIT_REF=${CIRCLE_SHA1} \
               --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+              --build-arg NODE_ENV="development" \
               --build-arg DB_URI=$DB_URI \
               --build-arg DB_DB_NAME=$DB_DB_NAME \
               --build-arg DB_TREE_COLLECTION=$DB_TREE_COLLECTION \
+              --build-arg DB_TREE_GROUP_COLLECTION=$DB_TREE_GROUP_COLLECTION \
               --build-arg TYPE=$TYPE \
               --build-arg PROJECT_ID=$PROJECT_ID \
               --build-arg PRIVATE_KEY_ID=$PRIVATE_KEY_ID \
+              --build-arg PRIVATE_KEY=$PRIVATE_KEY \
               --build-arg CLIENT_EMAIL=$CLIENT_EMAIL \
               --build-arg CLIENT_ID=$CLIENT_ID \
               --build-arg AUTH_URI=$AUTH_URI \
