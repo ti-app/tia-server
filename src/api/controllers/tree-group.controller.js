@@ -2,6 +2,11 @@ const httpStatus = require('http-status');
 const TreeGroupService = require('../services/tree-group.service');
 const TreeService = require('../services/tree.service');
 const UploadService = require('../services/upload.service');
+const {
+  generateTreeCoordsForLine,
+  generateTreeCoordsForCircle,
+  generateTreeCoordsForRect,
+} = require('../utils/tree-generator');
 
 const uploadImage = async (file) => {
   const uploadedImage = await UploadService.uploadImageToStorage(file);
@@ -26,22 +31,42 @@ exports.createTreeGroup = async (req, res, next) => {
 
     const treeGroupResult = await TreeGroupService.createTreeGroup(treeGroup);
     const groupId = treeGroupResult.insertedId;
+    const { distribution } = req.body;
+    let trees = [];
 
-    const numTrees = treeGroup.plants;
-    const trees = [];
-    for (let i = 0; i < numTrees; i += 1) {
-      const aTreeToAdd = Object.assign({}, treeGroup);
-      delete aTreeToAdd.plants;
-      // treeGroup is getting mutated by insert method..i guess, as it is having _id
-      delete aTreeToAdd._id;
-      aTreeToAdd.groupId = groupId;
-      aTreeToAdd.meta = {
-        createdAt: new Date().getTime(),
-      };
-      trees.push(aTreeToAdd);
+    if (distribution === 'line') {
+      const { startLat, startLon, endLat, endLon, plants } = req.body;
+      trees = generateTreeCoordsForLine(
+        { lat: startLat, lon: startLon },
+        { lat: endLat, lon: endLon },
+        plants
+      );
+    } else if (distribution === 'rect') {
+      // trees = generateTreeCoordsForRect();
+    } else if (distribution === 'circle') {
+      const { centerX, centerY, radius, plants } = req.body;
+      trees = generateTreeCoordsForCircle(centerX, centerY, radius, plants);
     }
 
-    const multipleTreeAddResult = await TreeService.addMultipleTrees(trees);
+    console.log('TCL: exports.createTreeGroup -> trees', trees);
+    const treesOfGroup = trees.map((aTree) => {
+      // const aTreeToAdd = Object.assign({}, aTree);
+      const aTreeToAdd = {
+        photo: uploadedImageURL,
+        location: {
+          type: 'Point',
+          coordinates: [parseFloat(aTree.lat), parseFloat(aTree.lon)],
+        },
+        health: req.body.health,
+        groupId,
+        meta: {
+          createdAt: new Date().getTime(),
+        },
+      };
+      return aTreeToAdd;
+    });
+
+    const multipleTreeAddResult = await TreeService.addMultipleTrees(treesOfGroup);
     await TreeGroupService.addTreesToGroup(multipleTreeAddResult.insertedIds, groupId);
     res.status(httpStatus.OK).json({ groupId });
   } catch (e) {
