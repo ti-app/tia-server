@@ -12,29 +12,20 @@ admin.initializeApp({
 
 module.exports = (req, res, next) => {
   const idToken = req.headers['x-id-token'];
-
+  if (!idToken) {
+    // prettier-ignore
+    logger.debug('[authenticated-middleware] required header x-id-token not found. request is unauthorized');
+    return res.status(httpStatus.UNAUTHORIZED).json(responses.unAuthorized());
+  }
   admin
     .auth()
     .verifyIdToken(idToken)
     .then((decodedToken) => {
       const uid = decodedToken;
-      console.log(uid);
       next();
     })
     .catch((error) => {
       logger.error(error);
       return res.status(httpStatus.UNAUTHORIZED).json(responses.unAuthorized());
     });
-  /**
-   * If the incoming request contains proper cookies,
-   * 'passport' module will parse the cookies and put the
-   * req.user object as the user logged in.
-   *
-   * Note however that this functionality is strictly limited to 'passport'
-   * module which is not included in this boilerplate code.
-   *
-   * Based on your api and session management configurations,
-   * you might want to check req.session.id ( in case of cookies )
-   * or req.headers['x-access-token'] and then validate the request
-   */
 };
