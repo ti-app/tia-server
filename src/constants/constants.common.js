@@ -1,19 +1,4 @@
 /**
- * This trick will get the intellisense to pick up
- * the dynamically defined constants.
- * We do not require any value here, just the shape of the object.
- * Do not worry about the values as they will be overridden by the
- * constant.[env].js variables
- */
-const shape = {
-  logs: undefined,
-  corsOptions: {
-    origin: undefined,
-    credentials: undefined,
-  },
-};
-
-/**
  * Common constants across all the environments (dev, staging, prod)
  */
 module.exports = {
@@ -25,12 +10,13 @@ module.exports = {
     database: process.env.DB_DB_NAME,
     collections: {
       tree: process.env.DB_TREE_COLLECTION,
+      treeGroup: process.env.DB_TREE_GROUP_COLLECTION,
     },
   },
   treeHealth: {
     healthy: 'healthy',
-    activeWeak: 'active but weak',
-    almostDead: 'almost dead',
+    activeWeak: 'weak',
+    almostDead: 'almostDead',
   },
   firebase: {
     firebaseServiceAccount: {
@@ -42,6 +28,7 @@ module.exports = {
       client_id: process.env.CLIENT_ID,
       auth_uri: process.env.AUTH_URI,
       token_uri: process.env.TOKEN_URI,
+      bucket_id: process.env.BUCKET_ID,
       auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_X509_CERT_URL,
       client_x509_cert_url: process.env.CLIENT_X509_CERT_URL,
     },
@@ -50,6 +37,4 @@ module.exports = {
   dump: {
     secret: process.env.DUMP_SECRET,
   },
-
-  ...shape,
 };

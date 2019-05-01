@@ -1,0 +1,92 @@
+version: 2
+jobs:
+  build_and_test:
+    docker:
+      - image: circleci/node:10
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+      - run:
+          name: Install dependencies
+          command: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      # - run:
+      #     name: Run tests
+      #     command: npm test
+      - store_test_results:
+          path: test-results
+  deploy_to_staging:
+    docker:
+      - image: google/cloud-sdk
+    environment:
+      - PROJECT_NAME: "tia-server"
+      - GOOGLE_PROJECT_ID: "project-tia-233318"
+      - GOOGLE_COMPUTE_ZONE: "asia-southeast1-a"
+      - GOOGLE_CLUSTER_NAME: "standard-cluster-1"
+    steps:
+      - checkout
+      - run: 
+          name: Setup Google Cloud SDK
+          command: |
+            apt-get install -qq -y gettext
+            echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+            gcloud --quiet container clusters get-credentials ${GOOGLE_CLUSTER_NAME}
+      - setup_remote_docker
+      - run: 
+          name: "Setup custom environment variables"
+          command: |
+            echo $DB_URI
+      - run: 
+          name: Docker build and push
+          command: |
+            docker build \
+              --build-arg COMMIT_REF=${CIRCLE_SHA1} \
+              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+              --build-arg NODE_ENV="development" \
+              --build-arg DB_URI=$DB_URI \
+              --build-arg DB_DB_NAME=$DB_DB_NAME \
+              --build-arg DB_TREE_COLLECTION=$DB_TREE_COLLECTION \
+              --build-arg DB_TREE_GROUP_COLLECTION=$DB_TREE_GROUP_COLLECTION \
+              --build-arg TYPE=$TYPE \
+              --build-arg PROJECT_ID=$PROJECT_ID \
+              --build-arg PRIVATE_KEY_ID=$PRIVATE_KEY_ID \
+              --build-arg CLIENT_EMAIL=$CLIENT_EMAIL \
+              --build-arg CLIENT_ID=$CLIENT_ID \
+              --build-arg AUTH_URI=$AUTH_URI \
+              --build-arg TOKEN_URI=$TOKEN_URI \
+              --build-arg AUTH_PROVIDER_X509_CERT_URL=$AUTH_PROVIDER_X509_CERT_URL \
+              --build-arg CLIENT_X509_CERT_URL=$CLIENT_X509_CERT_URL \
+              --build-arg DATABASE_URL=$DATABASE_URL \
+              --build-arg SESSION_SECRET=$SESSION_SECRET \
+              --build-arg BUCKET_ID=$BUCKET_ID \
+              -t ${PROJECT_NAME} .
+            docker tag ${PROJECT_NAME} eu.gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1}
+            gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://eu.gcr.io
+            docker push eu.gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1}
+      - run: 
+          name: Deploy to Kubernetes
+          command: |
+            envsubst < ${HOME}/project/k8s.yml > ${HOME}/patched_k8s.yml
+            kubectl apply -f ${HOME}/patched_k8s.yml
+            kubectl rollout status deployment/${PROJECT_NAME}
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - build_and_test
+      - deploy_to_staging:
+          requires:
+            - build_and_test
+          filters:
+            branches:
+              only: master

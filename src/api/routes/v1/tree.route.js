@@ -1,21 +1,14 @@
 const express = require('express');
 const validate = require('express-validation');
+const validation = require('../../validations/tree.validation');
 
 const controller = require('../../controllers/tree.controller');
-const validation = require('../../validations/tree.validation');
-const authenticated = require('../../middlewares/authenticated');
 
 const router = express.Router();
 
-// un protected route
-// Notice the same names of functions/object in validation and controller
-// router.route('/greet-me').get(validate(validation.me), controller.me);
+router.route('/').get(controller.allTrees);
+// router.route('/').get(controller.allTrees);
 
-// protected route
-// router.route('/greet-me-protected').get(authenticated, validate(validation.me), contrroueteroller.me);
-
-router.route('/add').post(authenticated, validate(validation.tree), controller.createTree);
-
-router.route('/trees').get(authenticated, controller.allTrees);
+router.route('/water/:treeID').get(controller.waterByPlantID);
 
 module.exports = router;
