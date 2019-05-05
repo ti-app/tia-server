@@ -52,7 +52,7 @@ jobs:
             docker build \
               --build-arg COMMIT_REF=${CIRCLE_SHA1} \
               --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
-              --build-arg NODE_ENV="development" \
+              --build-arg NODE_ENV=$NODE_ENV \
               --build-arg DB_URI=$DB_URI \
               --build-arg DB_DB_NAME=$DB_DB_NAME \
               --build-arg DB_TREE_COLLECTION=$DB_TREE_COLLECTION \
