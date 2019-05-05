@@ -7,6 +7,7 @@ module.exports = new winston.Logger({
       colorize: true,
       prettyPrint: true,
       label: 'TIA',
+      level: 'debug',
     }),
   ],
 });

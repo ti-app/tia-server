@@ -22,7 +22,4 @@ const getEnvironmentSpecificConstants = (env) => {
   /* eslint-enable indent, global-require */
 };
 
-module.exports = {
-  ...common,
-  ...getEnvironmentSpecificConstants(process.env.NODE_ENV),
-};
+module.exports = Object.assign({}, common, getEnvironmentSpecificConstants(process.env.NODE_ENV));

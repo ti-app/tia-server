@@ -5,12 +5,12 @@ const getFirebaseUidFromToken = (idToken) => {
   return admin
     .auth()
     .verifyIdToken(idToken)
-    .then((decodedToken) => {
-      const uid = decodedToken;
-      // console.log(uid);
+    .then((uid) => {
+      logger.debug('[getFirebaseUidFromToken] successfully verified idToken and received uid');
       return uid;
     })
     .catch((error) => {
+      logger.error('[getFirebaseUidFromToken] something went wrong while verifying the idToken');
       logger.error(error);
       throw error;
     });

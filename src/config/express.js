@@ -5,9 +5,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const tmp = require('tmp');
 
-const { corsOptions } = require('./vars');
-
-const { logs } = require('../constants');
+const { logs, corsOptions } = require('../constants');
 const session = require('./session');
 const routes = require('../api/routes/v1');
 const error = require('../api/middlewares/error');

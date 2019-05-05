@@ -14,28 +14,21 @@ admin.initializeApp({
 
 module.exports = (req, res, next) => {
   const idToken = req.headers['x-id-token'];
-
-  getFirebaseUidFromToken(idToken)
+  if (!idToken) {
+    // prettier-ignore
+    logger.debug('[authenticated-middleware] required header x-id-token not found. request is unauthorized');
+    return res.status(httpStatus.UNAUTHORIZED).json(responses.unAuthorized());
+  }
+  return getFirebaseUidFromToken(idToken)
     .then((uid) => {
-      logger.info('isAuthenticated', uid);
+      logger.debug(`[authenticated-middleware] request is authenticated. uid: "${uid}"`);
       req.uid = uid;
       next();
     })
     .catch((error) => {
+      // prettier-ignore
+      logger.error('[authenticated-middleware] something went wrong while getting uid from iDToken');
       logger.error(error);
       return res.status(httpStatus.UNAUTHORIZED).json(responses.unAuthorized());
     });
-
-  /**
-   * If the incoming request contains proper cookies,
-   * 'passport' module will parse the cookies and put the
-   * req.user object as the user logged in.
-   *
-   * Note however that this functionality is strictly limited to 'passport'
-   * module which is not included in this boilerplate code.
-   *
-   * Based on your api and session management configurations,
-   * you might want to check req.session.id ( in case of cookies )
-   * or req.headers['x-access-token'] and then validate the request
-   */
 };
