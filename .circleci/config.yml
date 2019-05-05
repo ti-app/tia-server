@@ -60,6 +60,7 @@ jobs:
               --build-arg TYPE=$TYPE \
               --build-arg PROJECT_ID=$PROJECT_ID \
               --build-arg PRIVATE_KEY_ID=$PRIVATE_KEY_ID \
+              --build-arg PRIVATE_KEY=$PRIVATE_KEY \
               --build-arg CLIENT_EMAIL=$CLIENT_EMAIL \
               --build-arg CLIENT_ID=$CLIENT_ID \
               --build-arg AUTH_URI=$AUTH_URI \
