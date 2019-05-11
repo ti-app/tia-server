@@ -175,39 +175,6 @@ function generatecoordforgroup2(obj) {
 
 // generate coordinate of a group of plants in a rectangular area.
 // This function creates Group based on Two diagonal points,
-// and spacing in X and Y direction
-// First diagonal point is Xmin, Ymin
-// Second diagonal point is Xmax, Ymax
-// Its a uniform pattern with fixed rows and columns
-// Please make necessary changes to update following entities of Plant Object
-// Grp?, Number, UploadUser, UploadDate, Last activity, Last activity User
-function generateTreeCoordsForRect(obj) {
-  // Please sort out min and max before this point.
-  // Below this code its not being checked if min<max or not
-  var xmin = obj.xmin;
-  var ymin = obj.ymin;
-  var xmax = obj.xmax;
-  var ymax = obj.ymax;
-  var numrows = obj.numrows;
-  var numcolumns = obj.numcolumns;
-  var grpcoord = new PlantObj();
-  var coordArray = [];
-  var i, j;
-  var xc, yc;
-  for (i = 0; i < numrows - 1; i++) {
-    for (j = 0; j < numcolumns; j++) {
-      xc = xmin + (i * (xmax - xmin)) / (numrows - 1);
-      yc = ymin + (j * (ymax - ymin)) / (numcolumns - 1);
-      grpcoord.lat = xc;
-      grpcoord.long = yc;
-      coordArray.push(grpcoord);
-    }
-  }
-  return coordArray;
-}
-
-// generate coordinate of a group of plants in a rectangular area.
-// This function creates Group based on Two diagonal points,
 // and Number of plants to be distributed randomly in the area
 // First diagonal point is Xmin, Ymin
 // Second diagonal point is Xmax, Ymax
@@ -215,29 +182,66 @@ function generateTreeCoordsForRect(obj) {
 // Please make necessary changes to update following entities of Plant Object
 // Grp?, Number, UploadUser, UploadDate, Last activity, Last activity User
 // By default two plants added at (xmin,ymin) and (xmax,ymax) locations.
-function generatecoordforgroup4(obj) {
-  var xmin = obj.xmin;
-  var ymin = obj.ymin;
-  var xmax = obj.xmax;
-  var ymax = obj.ymax;
-  var num = obj.numplants;
-  var grpcoord = new PlantObj();
-  var coordArray = [];
+function generateRandomTreeCoordsForRect(startPoint, endPoint, numPlants) {
+  const xmin = startPoint.lat;
+  const ymin = startPoint.lon;
+  const xmax = endPoint.lat;
+  const ymax = endPoint.lon;
+  const num = numPlants;
 
-  grpcoord.lat = xmin;
-  grpcoord.long = ymin;
-  coordArray.push(grpcoord);
-  for (let i = 1; i < num - 1; i++) {
+  const trees = [];
+  const firstTree = new TreePoint(xmin, ymin);
+  trees.push(firstTree);
+
+  for (let i = 0; i < num; i++) {
     const xc = xmin + Math.random() * (xmax - xmin);
     const yc = ymin + Math.random() * (ymax - ymin);
-    grpcoord.lat = xc;
-    grpcoord.long = yc;
-    coordArray.push(grpcoord);
+    const aTree = new TreePoint(xc, yc);
+    trees.push(aTree);
   }
-  grpcoord.lat = xmax;
-  grpcoord.long = ymax;
-  coordArray.push(grpcoord);
-  return coordArray;
+
+  const lastTree = new TreePoint(xmax, ymax);
+  trees.push(lastTree);
+  return trees;
+}
+
+// generate coordinate of a group of plants in a rectangular area.
+// This function creates Group based on Two diagonal points,
+// and spacing in X and Y direction
+// First diagonal point is Xmin, Ymin
+// Second diagonal point is Xmax, Ymax
+// Its a uniform pattern with fixed rows and columns
+// Please make necessary changes to update following entities of Plant Object
+// Grp?, Number, UploadUser, UploadDate, Last activity, Last activity User
+function generateTreeCoordsForRect(startPoint, endPoint, rows, cols, numPlants, random) {
+  // Please sort out min and max before this point.
+  // Below this code its not being checked if min<max or not
+
+  if (random) {
+    return generateRandomTreeCoordsForRect(startPoint, endPoint, numPlants);
+  }
+
+  const xmin = startPoint.lat;
+  const ymin = startPoint.lon;
+  const xmax = endPoint.lat;
+  const ymax = endPoint.lon;
+  const numrows = rows;
+  const numcolumns = cols;
+
+  const trees = [];
+
+  const xSpacing = (xmax - xmin) / (numrows - 1);
+  const ySpacing = (ymax - ymin) / (numcolumns - 1);
+
+  for (let i = 0; i < numrows; i++) {
+    for (let j = 0; j < numcolumns; j++) {
+      const xc = xmin + i * xSpacing;
+      const yc = ymin + j * ySpacing;
+      const aTree = new TreePoint(xc, yc);
+      trees.push(aTree);
+    }
+  }
+  return trees;
 }
 
 // generate coordinate of a group of plants in a circular area.

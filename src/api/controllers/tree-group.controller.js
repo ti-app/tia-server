@@ -16,9 +16,26 @@ const uploadImage = async (file) => {
 exports.createTreeGroup = async (req, res, next) => {
   try {
     const uploadedImageURL = await uploadImage(req.file);
-    /**
-     * Changing data format from form data to json
-     */
+
+    const { distribution } = req.body;
+    let trees = [];
+
+    if (distribution === 'line') {
+      const { startLat, startLon, endLat, endLon, plants } = req.body;
+      const startPoint = { lat: startLat, lon: startLon };
+      const endPoint = { lat: endLat, lon: endLon };
+      trees = generateTreeCoordsForLine(startPoint, endPoint, plants);
+    } else if (distribution === 'rect') {
+      const { startLat, startLon, endLat, endLon, rows, cols, plants, random } = req.body;
+      const startPoint = { lat: startLat, lon: startLon };
+      const endPoint = { lat: endLat, lon: endLon };
+      trees = generateTreeCoordsForRect(startPoint, endPoint, rows, cols, plants, random);
+    } else if (distribution === 'circle') {
+      const { centerX, centerY, radius, plants } = req.body;
+      trees = generateTreeCoordsForCircle(centerX, centerY, radius, plants);
+    }
+
+    // Changing data format from form data to json
     const treeGroup = {
       photo: uploadedImageURL,
       location: {
@@ -26,29 +43,12 @@ exports.createTreeGroup = async (req, res, next) => {
         coordinates: [parseFloat(req.body.lng), parseFloat(req.body.lat)],
       },
       health: req.body.health,
-      plants: req.body.plants,
+      plants: trees.length,
     };
 
     const treeGroupResult = await TreeGroupService.createTreeGroup(treeGroup);
     const groupId = treeGroupResult.insertedId;
-    const { distribution } = req.body;
-    let trees = [];
 
-    if (distribution === 'line') {
-      const { startLat, startLon, endLat, endLon, plants } = req.body;
-      trees = generateTreeCoordsForLine(
-        { lat: startLat, lon: startLon },
-        { lat: endLat, lon: endLon },
-        plants
-      );
-    } else if (distribution === 'rect') {
-      // trees = generateTreeCoordsForRect();
-    } else if (distribution === 'circle') {
-      const { centerX, centerY, radius, plants } = req.body;
-      trees = generateTreeCoordsForCircle(centerX, centerY, radius, plants);
-    }
-
-    console.log('TCL: exports.createTreeGroup -> trees', trees);
     const treesOfGroup = trees.map((aTree) => {
       // const aTreeToAdd = Object.assign({}, aTree);
       const aTreeToAdd = {
