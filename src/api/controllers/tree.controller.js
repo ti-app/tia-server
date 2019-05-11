@@ -33,3 +33,15 @@ exports.waterByPlantID = async (req, res, next) => {
     next(e);
   }
 };
+
+exports.deleteTree = async (req, res, next) => {
+  const { treeID } = req.params;
+  try {
+    const updatedTree = await TreeService.deleteTree(treeID);
+    res.status(httpStatus.OK).json({
+      status: 'success',
+    });
+  } catch (e) {
+    next(e);
+  }
+};
