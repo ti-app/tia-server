@@ -10,5 +10,6 @@ router.route('/').get(controller.allTrees);
 // router.route('/').get(controller.allTrees);
 
 router.route('/water/:treeID').get(controller.waterByPlantID);
+router.route('/:treeID').delete(controller.deleteTree);
 
 module.exports = router;

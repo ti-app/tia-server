@@ -1,5 +1,5 @@
-const { database } = require('../../../../constants');
 const { ObjectID } = require('mongodb');
+const { database } = require('../../../../constants');
 
 const TREE_COLLECTION_NAME = database.collections.tree;
 
@@ -33,33 +33,25 @@ const fetchAllTrees = (lat, lng, radius, health) => {
     },
   };
 
-  const matchOperator = {
-    $match: {
-      health: {
-        $in: health.split(','),
-      },
-    },
-  };
-
   const aggregationPipeline = [geoNearOperator];
 
-  if (health) aggregationPipeline.push(matchOperator);
+  if (health) {
+    const matchOperator = {
+      $match: {
+        health: {
+          $in: health.split(','),
+        },
+      },
+    };
 
-  return new Promise(async (resolve, reject) => {
-    db.collection(TREE_COLLECTION_NAME)
-      .aggregate(aggregationPipeline)
-      .toArray()
-      .then(resolve)
-      .catch(reject);
-  });
+    aggregationPipeline.push(matchOperator);
+  }
+
+  return db
+    .collection(TREE_COLLECTION_NAME)
+    .aggregate(aggregationPipeline)
+    .toArray();
 };
-// new Promise(async (resolve, reject) => {
-//   db.collection(database.collections.treeGroup)
-//     .find({})
-//     .toArray()
-//     .then(resolve)
-//     .catch(reject);
-// });
 
 const fetchAllTreesByLocation = (lng, lat, distance) =>
   new Promise(async (resolve, reject) => {
@@ -99,11 +91,28 @@ const updateTreeAfterWatering = async (treeID) => {
   }
 };
 
+const deleteTree = async (treeID) => {
+  try {
+    const updatedTree = await db.collection(database.collections.tree).updateOne(
+      {
+        _id: ObjectID(treeID),
+      },
+      {
+        $set: { deleted: true },
+      }
+    );
+    return updatedTree;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const queries = {
   addNewTrees,
   fetchAllTrees,
   fetchAllTreesByLocation,
   updateTreeAfterWatering,
+  deleteTree,
 };
 
 module.exports = { queries, setDatabase };
