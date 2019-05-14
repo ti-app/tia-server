@@ -10,7 +10,10 @@ const uploadImage = async (file) => {
 
 exports.createTreeGroup = async (req, res, next) => {
   try {
-    const uploadedImageURL = await uploadImage(req.file);
+    if(req.file && req.file != undefined){
+      const uploadedImageURL = await uploadImage(req.file);
+    }
+    
     /**
      * Changing data format from form data to json
      */
