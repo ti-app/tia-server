@@ -10,8 +10,9 @@ const uploadImage = async (file) => {
 
 exports.createTreeGroup = async (req, res, next) => {
   try {
+    let uploadedImageURL = "";
     if(req.file && req.file != undefined){
-      const uploadedImageURL = await uploadImage(req.file);
+         uploadedImageURL = await uploadImage(req.file);
     }
     
     /**
