@@ -47,6 +47,15 @@ const fetchAllTrees = (lat, lng, radius, health) => {
     aggregationPipeline.push(matchOperator);
   }
 
+  // Fetch only active trees
+  const deleteFilter = {
+    $match: {
+      deleted: {$ne: true}
+    },
+  };
+  aggregationPipeline.push(deleteFilter);
+
+
   return db
     .collection(TREE_COLLECTION_NAME)
     .aggregate(aggregationPipeline)
