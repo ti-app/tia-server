@@ -50,11 +50,10 @@ const fetchAllTrees = (lat, lng, radius, health) => {
   // Fetch only active trees
   const deleteFilter = {
     $match: {
-      deleted: {$ne: true}
+      deleted: { $ne: true },
     },
   };
   aggregationPipeline.push(deleteFilter);
-
 
   return db
     .collection(TREE_COLLECTION_NAME)
@@ -116,12 +115,26 @@ const deleteTree = async (treeID) => {
   }
 };
 
+const fetchTreeForIds = async (treeIDs) => {
+  const treeObjIds = treeIDs.map((id) => ObjectID(id));
+  try {
+    const trees = await db.collection(TREE_COLLECTION_NAME).find({
+      _id: { $in: treeObjIds },
+      deleted: { $ne: true },
+    });
+    return trees.toArray();
+  } catch (error) {
+    throw error;
+  }
+};
+
 const queries = {
   addNewTrees,
   fetchAllTrees,
   fetchAllTreesByLocation,
   updateTreeAfterWatering,
   deleteTree,
+  fetchTreeForIds,
 };
 
 module.exports = { queries, setDatabase };

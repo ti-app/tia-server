@@ -31,9 +31,32 @@ const addTreesToGroup = async (treeIds, groupId) => {
   }
 };
 
+const fetchTreeGroups = async (lat, lng, radius, health) => {
+  const geoNearOperator = {
+    $geoNear: {
+      near: {
+        type: 'Point',
+        coordinates: [parseFloat(lng), parseFloat(lat)],
+      },
+      distanceField: 'dist.calculated',
+      maxDistance: parseInt(radius, 10),
+      includeLocs: 'dist.location',
+      spherical: true,
+    },
+  };
+
+  const aggregationPipeline = [geoNearOperator];
+
+  return db
+    .collection(TREE_GROUP_COLLECTION)
+    .aggregate(aggregationPipeline)
+    .toArray();
+};
+
 const queries = {
   addNewTreeGroup,
   addTreesToGroup,
+  fetchTreeGroups,
 };
 
 module.exports = { queries, setDatabase };

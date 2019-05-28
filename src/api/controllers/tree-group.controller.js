@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const TreeGroupService = require('../services/tree-group.service');
 const TreeService = require('../services/tree.service');
 const UploadService = require('../services/upload.service');
+const toArray = require('../utils/to-array');
 
 const uploadImage = async (file) => {
   const uploadedImage = await UploadService.uploadImageToStorage(file);
@@ -10,11 +11,11 @@ const uploadImage = async (file) => {
 
 exports.createTreeGroup = async (req, res, next) => {
   try {
-    let uploadedImageURL = "";
-    if(req.file && req.file != undefined){
-         uploadedImageURL = await uploadImage(req.file);
+    let uploadedImageURL = '';
+    if (req.file && req.file != undefined) {
+      uploadedImageURL = await uploadImage(req.file);
     }
-    
+
     /**
      * Changing data format from form data to json
      */
@@ -48,6 +49,28 @@ exports.createTreeGroup = async (req, res, next) => {
     const multipleTreeAddResult = await TreeService.addMultipleTrees(trees);
     await TreeGroupService.addTreesToGroup(multipleTreeAddResult.insertedIds, groupId);
     res.status(httpStatus.OK).json({ groupId });
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.getTreeGroups = async (req, res, next) => {
+  try {
+    const { lat, lng, radius, health } = req.query;
+    const allTreeGroups = await TreeGroupService.fetchTreeGroups(lat, lng, radius, health);
+    const treeGroupResponse = [];
+
+    for (aGroup of allTreeGroups) {
+      const allTreeIds = toArray(aGroup.treeIds);
+      const allTrees = await TreeService.fetchTreeForIds(allTreeIds);
+      const group = Object.assign({}, aGroup);
+      delete group.treeIds;
+      delete group.dist;
+      group.trees = allTrees;
+      treeGroupResponse.push(group);
+    }
+
+    res.status(httpStatus.OK).json(treeGroupResponse);
   } catch (e) {
     next(e);
   }
