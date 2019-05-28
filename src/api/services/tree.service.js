@@ -20,6 +20,10 @@ class TreeService {
   deleteTree(treeID) {
     return repository.deleteTree(treeID);
   }
+
+  fetchTreeForIds(treeIDs) {
+    return repository.fetchTreeForIds(treeIDs);
+  }
 }
 
 module.exports = new TreeService();
