@@ -27,6 +27,12 @@ exports.createTreeGroup = async (req, res, next) => {
       },
       health: req.body.health,
       plants: req.body.plants,
+      uploadedUser: req.uid.user_id,
+      lastActivityDate: new Date().getTime(),
+      lastActedUSer: '',
+      lastACtivityType: 'Plant Addition',
+      healthCycle: '7 Days',
+      activeTrees: true,
     };
 
     const treeGroupResult = await TreeGroupService.createTreeGroup(treeGroup);
@@ -60,17 +66,17 @@ exports.getTreeGroups = async (req, res, next) => {
     const allTreeGroups = await TreeGroupService.fetchTreeGroups(lat, lng, radius, health);
     const treeGroupResponse = [];
 
-    for (aGroup of allTreeGroups) {
-      const allTreeIds = toArray(aGroup.treeIds);
-      const allTrees = await TreeService.fetchTreeForIds(allTreeIds);
-      const group = Object.assign({}, aGroup);
-      delete group.treeIds;
-      delete group.dist;
-      group.trees = allTrees;
-      treeGroupResponse.push(group);
-    }
+    // for (aGroup of allTreeGroups) {
+    //   const allTreeIds = toArray(aGroup.treeIds);
+    //   const allTrees = await TreeService.fetchTreeForIds(allTreeIds);
+    //   const group = Object.assign({}, aGroup);
+    //   delete group.treeIds;
+    //   delete group.dist;
+    //   group.trees = allTrees;
+    //   treeGroupResponse.push(group);
+    // }
 
-    res.status(httpStatus.OK).json(treeGroupResponse);
+    res.status(httpStatus.OK).json(allTreeGroups);
   } catch (e) {
     next(e);
   }
