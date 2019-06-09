@@ -44,8 +44,22 @@ const fetchTreeGroups = async (lat, lng, radius, health) => {
       spherical: true,
     },
   };
-
-  const aggregationPipeline = [geoNearOperator];
+  const lookupQuery = {
+    $lookup: {
+      from: 'tree',
+      let: { group_id: '$_id' },
+      pipeline: [
+        {
+          $match: {
+            $expr: { $and: [{ $eq: ['$groupId', '$$group_id'] }, { $ne: ['$deleted', true] }] },
+          },
+        },
+      ],
+      as: 'trees',
+    },
+  };
+  const filterForTress = { $match: { 'trees.0': { $exists: true } } };
+  const aggregationPipeline = [geoNearOperator, lookupQuery, filterForTress];
 
   return db
     .collection(TREE_GROUP_COLLECTION)
