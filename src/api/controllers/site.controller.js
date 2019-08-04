@@ -4,13 +4,14 @@ const { SiteService } = require('../services/site.service');
 exports.createSite = (req, res, next) => {
   try {
     const { site } = req.body;
-    // const sitesArr = [];
-
-    // for (let i = 0; i < sites; i += 1) {
-    //   sitesArr.push({ ...restSite });
-    // }
-    SiteService.create(site);
-    return res.status(httpStatus.OK).json({ message: 'Site added', site });
+    const siteToAdd = { ...site };
+    siteToAdd.addedByUser = req.uid.user_id;
+    siteToAdd.location = {
+      type: 'Point',
+      coordinates: [parseFloat(site.location.lng), parseFloat(site.location.lat)],
+    };
+    SiteService.create(siteToAdd);
+    return res.status(httpStatus.OK).json({ message: 'Site added', siteToAdd });
   } catch (e) {
     next(e);
   }
