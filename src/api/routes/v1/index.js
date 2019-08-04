@@ -2,6 +2,7 @@ const express = require('express');
 
 // import all the routes here
 const treeRoutes = require('./tree.route');
+const siteRoutes = require('./site.route');
 
 const router = express.Router();
 
@@ -11,5 +12,6 @@ const router = express.Router();
 router.get('/status', (req, res) => res.send('OK'));
 
 router.use('/tree', treeRoutes);
+router.use('/site', siteRoutes);
 
 module.exports = router;
