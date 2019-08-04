@@ -3,6 +3,8 @@ const express = require('express');
 // import all the routes here
 const treeRoutes = require('./tree.route');
 const siteRoutes = require('./site.route');
+const treeGroupRoutes = require('./tree-group.route');
+const authenticated = require('../../middlewares/authenticated');
 
 const router = express.Router();
 
@@ -11,7 +13,7 @@ const router = express.Router();
  */
 router.get('/status', (req, res) => res.send('OK'));
 
-router.use('/tree', treeRoutes);
-router.use('/site', siteRoutes);
-
+router.use('/tree', authenticated, treeRoutes);
+router.use('/tree_group', authenticated, treeGroupRoutes);
+router.use('/site', authenticated, siteRoutes);
 module.exports = router;

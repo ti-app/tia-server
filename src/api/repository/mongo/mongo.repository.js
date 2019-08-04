@@ -1,6 +1,7 @@
 const { MongoClient } = require('mongodb');
 const treeCollection = require('./collection/tree.collection');
 const siteCollection = require('./collection/site.collection');
+const treeGroupCollection = require('./collection/tree-group.collection');
 
 const { database } = require('../../../constants');
 
@@ -27,7 +28,7 @@ const connect = () =>
     // No there is no promise pending. Let us create a new one
     connectionInProgress = true; // setting the flag
     connectionPromise = new Promise(() => {
-      MongoClient.connect(database.uri, (err, client) => {
+      MongoClient.connect(database.uri, { useNewUrlParser: true }, (err, client) => {
         if (err) {
           connectionInProgress = false; // unsetting the flag
           return reject(err);
@@ -47,9 +48,11 @@ const connect = () =>
   console.log('Connected with mongo client');
   treeCollection.setDatabase(db);
   siteCollection.setDatabase(db);
+  treeGroupCollection.setDatabase(db);
 })();
 
 module.exports = {
   ...treeCollection.queries,
   ...siteCollection.queries,
+  ...treeGroupCollection.queries,
 };

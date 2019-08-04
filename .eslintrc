@@ -13,10 +13,14 @@
         "variables": false
       }
     ],
+    "class-methods-use-this": "off",
     "no-multi-str": 0,
     "indent": ["warn", 2],
     "arrow-parens": "off",
-    "comma-dangle": "off"
+    "comma-dangle": "off",
+    "linebreak-style": "off",
+    "object-curly-newline": "off",
+    "arrow-body-style": "off"
   },
   "env": {
     "node": true,

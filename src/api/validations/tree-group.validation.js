@@ -5,26 +5,17 @@ const toArry = require('../utils/to-array');
 const allowedHealth = toArry(treeHealth);
 
 module.exports = {
-  tree: {
+  treeGroup: {
     body: Joi.object({
-      userId: Joi.string().required(),
       health: Joi.string()
         .valid(allowedHealth)
         .required(),
       photos: Joi.array().items(Joi.string()),
       location: Joi.object({
-        lat: Joi.string().required(),
-        lng: Joi.string().required(),
+        type: 'Point',
+        coordinates: Joi.array().items(Joi.number()),
       }).required(),
       plants: Joi.number().required(),
     }),
-  },
-  get: {
-    query: {
-      lat: Joi.string().required(),
-      lng: Joi.string().required(),
-      radius: Joi.number().required(),
-      health: Joi.string(),
-    },
   },
 };

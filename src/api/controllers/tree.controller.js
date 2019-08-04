@@ -1,25 +1,46 @@
 const httpStatus = require('http-status');
-const { TreeService } = require('../services/tree.service');
-// const responseService = require('../services/response.service');
+const TreeService = require('../services/tree.service');
 
-exports.createTree = (req, res, next) => {
+exports.allTrees = async (req, res, next) => {
   try {
-    const { plants, ...restTree } = req.body;
-    const trees = [];
-
-    for (let i = 0; i < plants; i += 1) {
-      trees.push({ ...restTree });
-    }
-    TreeService.create(trees);
-    return res.status(httpStatus.OK).json({ message: 'tree added', trees });
+    const { lat, lng, radius, health } = req.query;
+    const allTrees = await TreeService.allTrees(lat, lng, radius, health);
+    res.status(httpStatus.OK).json(allTrees);
   } catch (e) {
     next(e);
   }
 };
 
-exports.allTrees = (req, res, next) => {
+exports.allTreesByLocation = async (req, res, next) => {
+  const { location, distance } = req.body;
+  const { lng } = location;
+  const { lat } = location;
+
   try {
-    TreeService.allTrees().then((allTrees) => res.status(httpStatus.OK).json(allTrees));
+    const allTrees = await TreeService.allTreesByLocation(lng, lat, distance);
+    res.status(httpStatus.OK).json(allTrees);
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.waterByPlantID = async (req, res, next) => {
+  const { treeID } = req.params;
+  try {
+    const updatedTree = await TreeService.updateTreeHealthByID(treeID);
+    res.status(httpStatus.OK).json(updatedTree);
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.deleteTree = async (req, res, next) => {
+  const { treeID } = req.params;
+  try {
+    const updatedTree = await TreeService.deleteTree(treeID);
+    res.status(httpStatus.OK).json({
+      status: 'success',
+    });
   } catch (e) {
     next(e);
   }

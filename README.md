@@ -7,11 +7,11 @@ Inside `src`, there are three directories: `api`, `config`, `constants` and one 
 
 `index.js` will export all the constants required in the api.
 
--   constants which are common across environments like dev and prod should be defined in `constants.common.js`
+- constants which are common across environments like dev and prod should be defined in `constants.common.js`
 
--   constants which are specific for environments should be defined in `constants.dev.js` or `constants.dev.js`. Make sure to have the same shape of constants in all the `constants.[env].js` files
+- constants which are specific for environments should be defined in `constants.dev.js` or `constants.dev.js`. Make sure to have the same shape of constants in all the `constants.[env].js` files
 
-*   > DO NOT include sensitive information like credentials of database in the constants, they should be defined in the .env file which is explained
+* > DO NOT include sensitive information like credentials of database in the constants, they should be defined in the .env file which is explained
 
 ### `config` directory
 
@@ -28,13 +28,13 @@ You can even take this to one level further by doing `express.dev.js` and `expre
 This directory will be the one you will be working with most of the time
 This directory contains more directories:
 
--   `controllers`
--   `middlewares`
--   `repository`
--   `routes`
--   `services`
--   `utils`
--   `validations`
+- `controllers`
+- `middlewares`
+- `repository`
+- `routes`
+- `services`
+- `utils`
+- `validations`
 
 #### controllers
 
@@ -68,13 +68,13 @@ All the queries to database should reside here. In this boilerplate, `mongo` dir
 
 Convention:
 
--   A separate directory for each repository/database used. For example if you use `redis` and
-    `mysql`, you will have two directories inside `repository`
--   Each database specific directory should have `[name-of-db].repository.js` file (`mongo.repository.js` is included in the example). This file should have logic to open and close the connection to
-    the database. This files also multiplexes the queries fired on that database.
-    You might want to have one more directory named `collection` or `table` inside each database specific directory. If you have two collection/table named `product` and `user` in your database, then `collection` directory should have `product.collection.js` and `user.collection.js` ( or `table` directory should have `product.table.js` and `user.table.js` ).
--   Each `[entity].collection.js` or `[entity].table.js` should at least export two members. A function named `setDatabase` and An object named `queries` containing all the query functions. Explore the boilerplate example for more information
--   All the queries should be exported in such a manner that a controller or a service using that query should not know on which database it is being fired. For example a controller should import a query like: `import { findUser, setSession } = require('../repository');` Chances are, `findUser` is exported by `mongo` and `setSession` is exported by `redis`. Use object destructuring at appropriate places to achieve the same
+- A separate directory for each repository/database used. For example if you use `redis` and
+  `mysql`, you will have two directories inside `repository`
+- Each database specific directory should have `[name-of-db].repository.js` file (`mongo.repository.js` is included in the example). This file should have logic to open and close the connection to
+  the database. This files also multiplexes the queries fired on that database.
+  You might want to have one more directory named `collection` or `table` inside each database specific directory. If you have two collection/table named `product` and `user` in your database, then `collection` directory should have `product.collection.js` and `user.collection.js` ( or `table` directory should have `product.table.js` and `user.table.js` ).
+- Each `[entity].collection.js` or `[entity].table.js` should at least export two members. A function named `setDatabase` and An object named `queries` containing all the query functions. Explore the boilerplate example for more information
+- All the queries should be exported in such a manner that a controller or a service using that query should not know on which database it is being fired. For example a controller should import a query like: `import { findUser, setSession } = require('../repository');` Chances are, `findUser` is exported by `mongo` and `setSession` is exported by `redis`. Use object destructuring at appropriate places to achieve the same
 
 #### routes
 
@@ -82,9 +82,9 @@ All the API routes.
 
 Convention:
 
--   Create version wise directories ( `v1`, `v2` )
--   Each version directory should have `index.js`.
--   If there are apis of `user` and `product`, the `v1` directory should have `user.route.js` and `product.route.js`
+- Create version wise directories ( `v1`, `v2` )
+- Each version directory should have `index.js`.
+- If there are apis of `user` and `product`, the `v1` directory should have `user.route.js` and `product.route.js`
 
 Look at the example given in the boilerplate and read the comments to get the better idea
 
@@ -108,8 +108,8 @@ Validations for each api.
 
 Convention:
 
--   All the validations of `/v1/product/...` route should be inside `product.validation.js`
-    Have a look at the `user.validation.js` included in the boilerplate example.
+- All the validations of `/v1/product/...` route should be inside `product.validation.js`
+  Have a look at the `user.validation.js` included in the boilerplate example.
 
 ---
 
