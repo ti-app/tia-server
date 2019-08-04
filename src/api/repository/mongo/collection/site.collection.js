@@ -9,7 +9,7 @@ const setDatabase = (_db) => {
 const addNewSite = (site) =>
   new Promise(async (resolve, reject) => {
     db.collection(database.collections.site)
-      .insertMany(site)
+      .insert(site)
       .then(resolve)
       .catch(reject);
   });
