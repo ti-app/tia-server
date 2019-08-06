@@ -56,6 +56,7 @@ jobs:
               --build-arg DB_URI=$DB_URI \
               --build-arg DB_DB_NAME=$DB_DB_NAME \
               --build-arg DB_TREE_COLLECTION=$DB_TREE_COLLECTION \
+              --build-arg DB_SITE_COLLECTION=$DB_TREE_COLLECTION \
               --build-arg DB_TREE_GROUP_COLLECTION=$DB_TREE_GROUP_COLLECTION \
               --build-arg TYPE=$TYPE \
               --build-arg PROJECT_ID=$PROJECT_ID \
