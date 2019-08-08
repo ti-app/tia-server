@@ -30,7 +30,7 @@ exports.createTreeGroup = async (req, res, next) => {
       uploadedUser: req.uid.user_id,
       lastActivityDate: new Date().getTime(),
       lastActedUSer: '',
-      lastACtivityType: 'Plant Addition',
+      lastActivityType: 'Plant Addition',
       healthCycle: '7 Days',
       activeTrees: true,
     };
