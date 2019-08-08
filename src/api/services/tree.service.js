@@ -24,6 +24,10 @@ class TreeService {
   fetchTreeForIds(treeIDs) {
     return repository.fetchTreeForIds(treeIDs);
   }
+
+  updateTree(treeDetails) {
+    return repository.updateTree(treeDetails);
+  }
 }
 
 module.exports = new TreeService();
