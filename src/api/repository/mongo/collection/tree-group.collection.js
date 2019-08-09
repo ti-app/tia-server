@@ -81,10 +81,17 @@ const fetchTreeGroups = async (lat, lng, radius, health) => {
     .toArray();
 };
 
+const isTreeExistOnCoordinate = (lat, lng) => {
+  return db
+    .collection(TREE_GROUP_COLLECTION)
+    .findOne({ 'location.coordinates': [parseFloat(lat), parseFloat(lng)] });
+};
+
 const queries = {
   addNewTreeGroup,
   addTreesToGroup,
   fetchTreeGroups,
+  isTreeExistOnCoordinate,
 };
 
 module.exports = { queries, setDatabase };
