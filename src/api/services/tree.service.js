@@ -24,6 +24,21 @@ class TreeService {
   fetchTreeForIds(treeIDs) {
     return repository.fetchTreeForIds(treeIDs);
   }
+
+  updateTree(treeDetails) {
+    return repository.updateTree(treeDetails);
+  }
+
+  getCurrentTreeHealth(allTrees) {
+    allTrees.forEach((tree) => {
+      const currentDate = new Date().getTime();
+      const { healthCycle, lastActivityDate, health } = tree;
+      const cycleHours = healthCycle * 24;
+      const hoursDiff = (currentDate - lastActivityDate) / 36e5;
+    });
+
+    return allTrees;
+  }
 }
 
 module.exports = new TreeService();

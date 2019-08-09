@@ -11,6 +11,21 @@ const uploadImage = async (file) => {
 
 exports.createTreeGroup = async (req, res, next) => {
   try {
+    const { lat, lng, isCoordinateExists } = req.body;
+
+    const isTreeExist = await TreeGroupService.isTreeExistOnCoordinate(lat, lng);
+    if (isTreeExist && !isCoordinateExists) {
+      const isCoordinateExists = true;
+      return res.status(httpStatus.ALREADY_REPORTED).json({
+        message: `Tree/ site Already exists on the request location. If you still wants to plant click on yes, click on NO and add the plant again.`,
+        isCoordinateExists,
+      });
+    }
+
+    if (isCoordinateExists) {
+      TreeService.updateTree(req.body);
+    }
+
     let uploadedImageURL = '';
     if (req.file && req.file != undefined) {
       uploadedImageURL = await uploadImage(req.file);
@@ -23,7 +38,7 @@ exports.createTreeGroup = async (req, res, next) => {
       photo: uploadedImageURL,
       location: {
         type: 'Point',
-        coordinates: [parseFloat(req.body.lng), parseFloat(req.body.lat)],
+        coordinates: [parseFloat(lng), parseFloat(lat)],
       },
       health: req.body.health,
       plants: req.body.plants,

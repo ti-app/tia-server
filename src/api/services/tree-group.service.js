@@ -12,6 +12,10 @@ class TreeGroupService {
   fetchTreeGroups(lat, lng, radius, health) {
     return repository.fetchTreeGroups(lat, lng, radius, health);
   }
+
+  isTreeExistOnCoordinate(lat, lng) {
+    return repository.isTreeExistOnCoordinate(lat, lng);
+  }
 }
 
 module.exports = new TreeGroupService();

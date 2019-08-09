@@ -133,6 +133,30 @@ const fetchTreeForIds = async (treeIDs) => {
   }
 };
 
+const updateTree = async (treeReq) => {
+  console.log(treeReq);
+  let multi = false;
+  if (Object.keys(treeReq).length > 1) {
+    multi = true;
+  }
+  try {
+    const updatedTree = await db.collection(database.collections.tree).update(
+      {
+        _id: ObjectID(treeReq.treeID),
+      },
+      {
+        $set: treeReq,
+      },
+      {
+        multi: multi,
+      }
+    );
+    return updatedTree;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const queries = {
   addNewTrees,
   fetchAllTrees,
@@ -140,6 +164,7 @@ const queries = {
   updateTreeAfterWatering,
   deleteTree,
   fetchTreeForIds,
+  updateTree,
 };
 
 module.exports = { queries, setDatabase };

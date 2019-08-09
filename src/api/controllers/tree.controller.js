@@ -5,7 +5,8 @@ exports.allTrees = async (req, res, next) => {
   try {
     const { lat, lng, radius, health } = req.query;
     const allTrees = await TreeService.allTrees(lat, lng, radius, health);
-    res.status(httpStatus.OK).json(allTrees);
+    const currentTreeHealth = TreeService.getCurrentTreeHealth(allTrees);
+    res.status(httpStatus.OK).json(currentTreeHealth);
   } catch (e) {
     next(e);
   }
