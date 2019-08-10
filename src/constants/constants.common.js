@@ -14,11 +14,6 @@ module.exports = {
       treeGroup: process.env.DB_TREE_GROUP_COLLECTION,
     },
   },
-  treeHealth: {
-    healthy: 'healthy',
-    activeWeak: 'weak',
-    almostDead: 'almostDead',
-  },
   firebase: {
     firebaseServiceAccount: {
       type: process.env.TYPE,

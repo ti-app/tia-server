@@ -1,5 +1,6 @@
 const { ObjectID } = require('mongodb');
 const { database } = require('../../../../constants');
+const { treeHealth } = require('../../../constants/tree.constants');
 
 const TREE_COLLECTION_NAME = database.collections.tree;
 
@@ -90,7 +91,11 @@ const updateTreeAfterWatering = async (treeID) => {
         _id: ObjectID(treeID),
       },
       {
-        $set: { health: 'healthy' },
+        $set: {
+          health: treeHealth.HEALTHY,
+          lastActivityDate: new Date().getTime(),
+          lastActivityType: 'Watered',
+        },
       }
     );
     return updatedTree;
@@ -129,7 +134,6 @@ const fetchTreeForIds = async (treeIDs) => {
 };
 
 const updateTree = async (treeReq) => {
-  console.log(treeReq);
   let multi = false;
   if (Object.keys(treeReq).length > 1) {
     multi = true;
