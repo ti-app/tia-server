@@ -35,7 +35,10 @@ class TreeService {
     allTrees.forEach((tree) => {
       const currentDate = new Date().getTime();
       const { healthCycle, lastActivityDate } = tree;
-      const cycleHours = healthCycle * 24;
+
+      var str = healthCycle.match(/\d+/g, '') + '';
+      var healthCycleInt = str.split(',').join('');
+      const cycleHours = healthCycleInt * 24;
       const hours = (currentDate - lastActivityDate) / 36e5;
 
       if (hours < cycleHours / numColors) {
@@ -49,7 +52,7 @@ class TreeService {
       } else {
         tree.health = treeHealth.DEAD;
       }
-      repository.updateTreeAfterWatering(tree['_id'], tree.health);
+      repository.updateTree(tree);
     });
 
     return allTrees;
