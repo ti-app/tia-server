@@ -84,7 +84,7 @@ const fetchAllTreesByLocation = (lng, lat, distance) =>
       .catch(reject);
   });
 
-const updateTreeAfterWatering = async (treeID) => {
+const updateTreeAfterWatering = async (treeID, health) => {
   try {
     const updatedTree = await db.collection(database.collections.tree).updateOne(
       {
@@ -92,7 +92,7 @@ const updateTreeAfterWatering = async (treeID) => {
       },
       {
         $set: {
-          health: treeHealth.HEALTHY,
+          health: health || treeHealth.HEALTHY,
           lastActivityDate: new Date().getTime(),
           lastActivityType: 'Watered',
         },
