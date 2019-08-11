@@ -36,8 +36,15 @@ class TreeService {
       const currentDate = new Date().getTime();
       const { healthCycle, lastActivityDate } = tree;
 
-      var str = healthCycle.match(/\d+/g, '') + '';
-      var healthCycleInt = str.split(',').join('');
+      // Temporary condition: Remove once all healthCycle is in Integer
+      let healthCycleInt;
+      if (typeof healthCycle === 'string') {
+        const str = healthCycle.match(/\d+/g, '') + '';
+        healthCycleInt = str.split(',').join('');
+      } else {
+        healthCycleInt = healthCycle;
+      }
+      // TODO: Remove till here and change the variable healthCycleInt to healthCycle on line 48.
       const cycleHours = healthCycleInt * 24;
       const hours = (currentDate - lastActivityDate) / 36e5;
 

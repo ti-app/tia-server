@@ -11,7 +11,7 @@ const uploadImage = async (file) => {
 
 exports.createTreeGroup = async (req, res, next) => {
   try {
-    const { lat, lng, isCoordinateExists } = req.body;
+    const { lat, lng, isCoordinateExists, health, plants, plantType, waterCycle } = req.body;
 
     const isTreeExist = await TreeGroupService.isTreeExistOnCoordinate(lat, lng);
     if (isTreeExist && !isCoordinateExists) {
@@ -40,13 +40,15 @@ exports.createTreeGroup = async (req, res, next) => {
         type: 'Point',
         coordinates: [parseFloat(lng), parseFloat(lat)],
       },
-      health: req.body.health,
-      plants: req.body.plants,
+      plantType,
+      healthCycle: Math.round(waterCycle),
+      health,
+      plants,
+      uploadedDate: new Date().getTime(),
       uploadedUser: req.uid.user_id,
       lastActivityDate: new Date().getTime(),
-      lastActedUSer: '',
+      lastActedUser: req.uid.user_id,
       lastActivityType: 'Plant Addition',
-      healthCycle: '7 Days',
       activeTrees: true,
     };
 
