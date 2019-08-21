@@ -9,7 +9,8 @@
     "lint": "eslint **/*.js --ignore-path .gitignore --ignore-pattern internals/scripts",
     "test": "cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --timeout 20000 --recursive src/api/tests",
     "prettier:fix": "prettier --write src/**/*.{ts,json,less,css,md}",
-    "tslint:fix": "tslint --fix"
+    "tslint:fix": "tslint --fix",
+    "promote": "node src/api/utils/make-moderator.js"
   },
   "devDependencies": {
     "chai": "^4.1.0",

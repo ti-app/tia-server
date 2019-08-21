@@ -34,4 +34,7 @@ module.exports = {
   dump: {
     secret: process.env.DUMP_SECRET,
   },
+  roles: {
+    MODERATOR: 'moderator',
+  },
 };

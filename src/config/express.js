@@ -9,6 +9,7 @@ const { logs, corsOptions } = require('../constants');
 const session = require('./session');
 const routes = require('../api/routes/v1');
 const error = require('../api/middlewares/error');
+const authenticated = require('../api/middlewares/authenticated');
 
 /**
  * Express instance
@@ -42,6 +43,8 @@ app.use(cors(corsOptions));
 
 // session middlewares
 app.use(session());
+
+app.use(authenticated);
 
 // mount api v1 routes
 app.use('/v1', routes);
