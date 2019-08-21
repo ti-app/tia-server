@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const expressValidation = require('express-validation');
 const APIError = require('../utils/APIError');
 const { env } = require('../../constants');
+const logger = require('../utils/logger');
 
 /**
  * Error handler. Send stacktrace only during development
@@ -19,6 +20,7 @@ const handler = (err, req, res, next) => {
     delete response.stack;
   }
 
+  logger.error(err);
   res.status(response.code);
   res.json(response);
   res.end();
