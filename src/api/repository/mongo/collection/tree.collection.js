@@ -139,7 +139,7 @@ const updateTree = async (treeReq) => {
     multi = true;
   }
   try {
-    const updatedTree = await db.collection(database.collections.tree).update(
+    const updatedTree = await db.collection(database.collections.tree).updateOne(
       {
         _id: ObjectID(treeReq.treeID),
       },
