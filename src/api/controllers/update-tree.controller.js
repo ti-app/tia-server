@@ -22,7 +22,7 @@ exports.updateTree = async (req, res, next) => {
   let uploadedImageURL = '';
   if (req.file && req.file != undefined) {
     uploadedImageURL = await uploadImage(req.file);
-    toBeUpdate.photo= uploadedImageURL,
+    toBeUpdate.photo = uploadedImageURL;
   }
 
   // uploadedUser never changes
