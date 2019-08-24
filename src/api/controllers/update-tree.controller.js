@@ -1,5 +1,12 @@
 const httpStatus = require('http-status');
 const TreeService = require('../services/tree.service');
+const UploadService = require('../services/upload.service');
+
+const uploadImage = async (file) => {
+  const uploadedImage = await UploadService.uploadImageToStorage(file);
+  return uploadedImage;
+};
+
 
 /**
  * updateTree: Updates TREE for the given request
