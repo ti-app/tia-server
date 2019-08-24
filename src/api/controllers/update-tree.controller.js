@@ -6,10 +6,17 @@ const TreeService = require('../services/tree.service');
  */
 
 exports.updateTree = async (req, res, next) => {
+  let uploadedImageURL = '';
+  if (req.file && req.file != undefined) {
+    uploadedImageURL = await uploadImage(req.file);
+  }
+
   const toBeUpdate = {
     ...req.body,
     ...req.params,
+    photo: uploadedImageURL,
   };
+
   // uploadedUser never changes
   delete toBeUpdate.uploadedUser;
   try {
