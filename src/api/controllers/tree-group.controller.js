@@ -4,7 +4,6 @@ const TreeService = require('../services/tree.service');
 const UploadService = require('../services/upload.service');
 const { activityType } = require('../constants/tree.constants');
 
-
 exports.createTreeGroup = async (req, res, next) => {
   try {
     const { lat, lng, isCoordinateExists, health, plants, plantType, waterCycle } = req.body;
@@ -62,6 +61,7 @@ exports.createTreeGroup = async (req, res, next) => {
         },
       ],
       activeTrees: true,
+      moderatorApproved: TreeGroupService.addedByModerator(req.uid.role),
     };
 
     const treeGroupResult = await TreeGroupService.createTreeGroup(treeGroup);
@@ -91,8 +91,9 @@ exports.createTreeGroup = async (req, res, next) => {
 
 exports.getTreeGroups = async (req, res, next) => {
   try {
+    const { uid } = req;
     const { lat, lng, radius, health } = req.query;
-    const allTreeGroups = await TreeGroupService.fetchTreeGroups(lat, lng, radius, health);
+    const allTreeGroups = await TreeGroupService.fetchTreeGroups(lat, lng, radius, health, uid);
     res.status(httpStatus.OK).json(allTreeGroups);
   } catch (e) {
     next(e);
