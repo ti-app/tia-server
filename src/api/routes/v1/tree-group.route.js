@@ -3,8 +3,7 @@ const validate = require('express-validation');
 
 const controller = require('../../controllers/tree-group.controller');
 const validation = require('../../validations/tree-group.validation');
-
-const multer = require('../../utils/multer-config');
+const multer = require('../../../config/multer');
 
 const router = express.Router();
 
