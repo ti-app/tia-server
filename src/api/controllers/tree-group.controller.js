@@ -2,6 +2,8 @@ const httpStatus = require('http-status');
 const TreeGroupService = require('../services/tree-group.service');
 const TreeService = require('../services/tree.service');
 const UploadService = require('../services/upload.service');
+const { activityType } = require('../constants/tree.constants');
+
 
 exports.createTreeGroup = async (req, res, next) => {
   try {
@@ -47,7 +49,18 @@ exports.createTreeGroup = async (req, res, next) => {
       uploadedUser: req.uid.user_id,
       lastActivityDate: new Date().getTime(),
       lastActedUser: req.uid.user_id,
-      lastActivityType: 'Plant Addition',
+      owner: {
+        userId: req.uid.user_id,
+        displayName: req.uid.displayName,
+      },
+      lastActivityType: activityType.addPlant,
+      activityDetails: [
+        {
+          activity: activityType.addPlant,
+          date: new Date().getTime(),
+          user: req.uid.displayName,
+        },
+      ],
       activeTrees: true,
     };
 

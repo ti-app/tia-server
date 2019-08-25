@@ -1,6 +1,6 @@
 const { ObjectID } = require('mongodb');
 const { database } = require('../../../../constants');
-const { treeHealth } = require('../../../constants/tree.constants');
+const { treeHealth, activityType } = require('../../../constants/tree.constants');
 
 const TREE_COLLECTION_NAME = database.collections.tree;
 
@@ -86,15 +86,23 @@ const fetchAllTreesByLocation = (lng, lat, distance) =>
 
 const updateTreeAfterWatering = async (treeID) => {
   try {
-    const updatedTree = await db.collection(database.collections.tree).updateOne(
+    const updatedTree = await db.collection(database.collections.tree).update(
       {
         _id: ObjectID(treeID),
+      },
+      {
+        $push: {
+          activityDetails: {
+            activity: activityType.waterPlant,
+            date: new Date().getTime(),
+          },
+        },
       },
       {
         $set: {
           health: treeHealth.HEALTHY,
           lastActivityDate: new Date().getTime(),
-          lastActivityType: 'Watered',
+          lastActivityType: activityType.waterPlant,
         },
       }
     );
@@ -109,6 +117,14 @@ const deleteTree = async (treeID) => {
     const updatedTree = await db.collection(database.collections.tree).updateOne(
       {
         _id: ObjectID(treeID),
+      },
+      {
+        $push: {
+          activityDetails: {
+            activity: activityType.deletePlant,
+            date: new Date().getTime(),
+          },
+        },
       },
       {
         $set: { deleted: true },
@@ -139,18 +155,22 @@ const updateTree = async (treeReq) => {
     multi = true;
   }
   try {
-    const updatedTree = await db.collection(database.collections.tree).updateOne(
+    return await db.collection(database.collections.tree).update(
       {
         _id: ObjectID(treeReq.treeID),
       },
       {
-        $set: treeReq,
+        $push: {
+          activityDetails: {
+            activity: activityType.updatePlant,
+            date: new Date().getTime(),
+          },
+        },
       },
       {
-        multi: multi,
+        $set: treeReq,
       }
     );
-    return updatedTree;
   } catch (error) {
     throw error;
   }
