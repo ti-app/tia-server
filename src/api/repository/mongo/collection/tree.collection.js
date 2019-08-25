@@ -125,8 +125,6 @@ const deleteTree = async (treeID) => {
             date: new Date().getTime(),
           },
         },
-      },
-      {
         $set: { deleted: true },
       }
     );
