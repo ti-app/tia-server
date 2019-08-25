@@ -21,6 +21,10 @@ class TreeGroupService {
   addedByModerator(role) {
     return role === common.roles.MODERATOR;
   }
+
+  updateModApprovalStatus(groupID, approve) {
+    return repository.updateModApprovalStatus(groupID, approve);
+  }
 }
 
 module.exports = new TreeGroupService();
