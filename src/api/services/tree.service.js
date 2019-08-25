@@ -1,5 +1,5 @@
 const repository = require('../repository');
-const { treeHealth } = require('../constants/tree.constants');
+const { treeHealth } = require('../../constants');
 
 class TreeService {
   addMultipleTrees(trees) {
