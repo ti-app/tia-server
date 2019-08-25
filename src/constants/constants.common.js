@@ -37,4 +37,18 @@ module.exports = {
   roles: {
     MODERATOR: 'moderator',
   },
+  treeHealth: {
+    HEALTHY: 'healthy',
+    ADEQUATE: 'adequate',
+    AVERAGE: 'average',
+    WEAK: 'weak',
+    DEAD: 'almostDead',
+  },
+  activityType: {
+    addPlant: 'PLANT_ADDED',
+    deletePlant: 'PLANT_DELETED',
+    waterPlant: 'PLANT_WATERED',
+    updatePlant: 'PLANT_UPDATED',
+    fertilizePlant: 'PLANT_FERTILIZED',
+  },
 };

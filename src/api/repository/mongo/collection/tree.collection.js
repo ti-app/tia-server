@@ -1,6 +1,6 @@
 const { ObjectID } = require('mongodb');
 const { database } = require('../../../../constants');
-const { treeHealth, activityType } = require('../../../constants/tree.constants');
+const { treeHealth, activityType } = require('../../../../constants');
 
 const TREE_COLLECTION_NAME = database.collections.tree;
 

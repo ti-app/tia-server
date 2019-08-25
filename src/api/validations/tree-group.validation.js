@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { treeHealth } = require('../constants/tree.constants');
+const { treeHealth } = require('../../constants');
 const toArry = require('../utils/to-array');
 
 const allowedHealth = toArry(treeHealth);
