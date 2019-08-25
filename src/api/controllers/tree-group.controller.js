@@ -103,7 +103,7 @@ exports.getTreeGroups = async (req, res, next) => {
 
 exports.modActionOnTreeGroup = async (req, res, next) => {
   try {
-    TreeGroupService.updateModApprovalStatus(req.params.groupID, req.body.approve);
+    await TreeGroupService.updateModApprovalStatus(req.params.groupID, req.body.approve);
     res.status(httpStatus.OK).json({ status: 'success' });
   } catch (e) {
     next(e);
