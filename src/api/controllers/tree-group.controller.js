@@ -72,6 +72,7 @@ exports.createTreeGroup = async (req, res, next) => {
     for (let i = 0; i < numTrees; i += 1) {
       const aTreeToAdd = Object.assign({}, treeGroup);
       delete aTreeToAdd.plants;
+      delete aTreeToAdd.moderatorApproved;
       // treeGroup is getting mutated by insert method..i guess, as it is having _id
       delete aTreeToAdd._id;
       aTreeToAdd.groupId = groupId;
@@ -95,6 +96,15 @@ exports.getTreeGroups = async (req, res, next) => {
     const { lat, lng, radius, health } = req.query;
     const allTreeGroups = await TreeGroupService.fetchTreeGroups(lat, lng, radius, health, uid);
     res.status(httpStatus.OK).json(allTreeGroups);
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.modActionOnTreeGroup = async (req, res, next) => {
+  try {
+    TreeGroupService.updateModApprovalStatus(req.params.groupID, req.body.approve);
+    res.status(httpStatus.OK).json({ status: 'success' });
   } catch (e) {
     next(e);
   }

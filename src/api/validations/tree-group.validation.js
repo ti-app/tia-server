@@ -18,4 +18,9 @@ module.exports = {
       plants: Joi.number().required(),
     }),
   },
+  modAction: {
+    body: Joi.object({
+      approve: Joi.bool().required(),
+    }),
+  },
 };

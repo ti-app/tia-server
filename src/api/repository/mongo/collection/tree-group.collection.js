@@ -1,3 +1,4 @@
+const { ObjectID } = require('mongodb');
 const { database, roles } = require('../../../../constants');
 
 let db = null;
@@ -44,6 +45,13 @@ const fetchTreeGroups = async (lat, lng, radius, health, uid) => {
       spherical: true,
     },
   };
+
+  const onlyModApprovedTreeGroups = {
+    $match: {
+      $or: [{ moderatorApproved: { $eq: true } }, { 'owner.userId': { $eq: uid.user_id } }],
+    },
+  };
+
   const lookupQuery = {
     $lookup: {
       from: 'tree',
@@ -72,12 +80,17 @@ const fetchTreeGroups = async (lat, lng, radius, health, uid) => {
       $in: health.split(','),
     };
   }
-  if (uid.role !== roles.MODERATOR) {
-    filterForTress.$match['owner.userId'] = {
-      $eq: uid.user_id,
-    };
-  }
-  const aggregationPipeline = [geoNearOperator, lookupQuery, filterForTress];
+  // if (uid.role !== roles.MODERATOR) {
+  //   filterForTress.$match['owner.userId'] = {
+  //     $eq: uid.user_id,
+  //   };
+  // }
+  const aggregationPipeline = [
+    geoNearOperator,
+    onlyModApprovedTreeGroups,
+    lookupQuery,
+    filterForTress,
+  ];
 
   return db
     .collection(TREE_GROUP_COLLECTION)
@@ -91,11 +104,25 @@ const isTreeExistOnCoordinate = (lat, lng) => {
     .findOne({ 'location.coordinates': [parseFloat(lat), parseFloat(lng)] });
 };
 
+const updateModApprovalStatus = (groupID, approve) => {
+  return db.collection(TREE_GROUP_COLLECTION).updateOne(
+    {
+      _id: ObjectID(groupID),
+    },
+    {
+      $set: {
+        moderatorApproved: approve,
+      },
+    }
+  );
+};
+
 const queries = {
   addNewTreeGroup,
   addTreesToGroup,
   fetchTreeGroups,
   isTreeExistOnCoordinate,
+  updateModApprovalStatus,
 };
 
 module.exports = { queries, setDatabase };
