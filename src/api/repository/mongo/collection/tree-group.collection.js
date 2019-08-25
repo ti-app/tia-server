@@ -1,4 +1,4 @@
-const { database } = require('../../../../constants');
+const { database, roles } = require('../../../../constants');
 
 let db = null;
 
@@ -31,7 +31,7 @@ const addTreesToGroup = async (treeIds, groupId) => {
   }
 };
 
-const fetchTreeGroups = async (lat, lng, radius, health) => {
+const fetchTreeGroups = async (lat, lng, radius, health, uid) => {
   const geoNearOperator = {
     $geoNear: {
       near: {
@@ -72,7 +72,11 @@ const fetchTreeGroups = async (lat, lng, radius, health) => {
       $in: health.split(','),
     };
   }
-
+  if (uid.role !== roles.MODERATOR) {
+    filterForTress.$match['owner.userId'] = {
+      $eq: uid.user_id,
+    };
+  }
   const aggregationPipeline = [geoNearOperator, lookupQuery, filterForTress];
 
   return db
