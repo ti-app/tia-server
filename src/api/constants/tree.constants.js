@@ -4,15 +4,14 @@ const treeHealth = {
   AVERAGE: 'average',
   WEAK: 'weak',
   DEAD: 'almostDead',
-  SITE: 'plantation site',
 };
 
 const activityType = {
-  addPlant: 'Plant added',
-  deletePlant: 'Plant deleted',
-  waterPlant: 'Plant Watered',
-  updatePlant: 'Plant updated',
-  fertilizePlant: 'Plant Fertilized',
+  addPlant: 'PLANT_ADDED',
+  deletePlant: 'PLANT_DELETED',
+  waterPlant: 'PLANT_WATERED',
+  updatePlant: 'PLANT_UPDATED',
+  fertilizePlant: 'PLANT_FERTILIZED',
 };
 
 module.exports = {
