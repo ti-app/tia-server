@@ -20,7 +20,7 @@ class UploadService {
         reject('No image file');
       }
 
-      const newFileName = `${file.originalname}_${Date.now()}`;
+      const newFileName = `${file.originalname}-${Date.now()}`;
 
       const fileUpload = bucket.file(newFileName);
 
@@ -37,12 +37,17 @@ class UploadService {
       blobStream.on('finish', () => {
         // The public URL can be used to directly access the file via HTTP.
         const url = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`;
-        resolve(url);
+        resolve({ url, fileName: fileUpload.name });
       });
 
       blobStream.end(file.buffer);
     });
     return prom;
+  }
+
+  deleteImage(imageName) {
+    const bucket = this.getGoogleStorage();
+    return bucket.file(imageName).delete();
   }
 }
 
