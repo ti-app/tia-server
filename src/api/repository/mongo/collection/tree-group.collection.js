@@ -85,12 +85,14 @@ const fetchTreeGroups = async (lat, lng, radius, health, uid) => {
   //     $eq: uid.user_id,
   //   };
   // }
-  const aggregationPipeline = [
-    geoNearOperator,
-    onlyModApprovedTreeGroups,
-    lookupQuery,
-    filterForTress,
-  ];
+
+  const aggregationPipeline = [geoNearOperator];
+
+  if (uid.role !== roles.MODERATOR) {
+    aggregationPipeline.push(onlyModApprovedTreeGroups);
+  }
+
+  aggregationPipeline.push(lookupQuery, filterForTress);
 
   return db
     .collection(TREE_GROUP_COLLECTION)
