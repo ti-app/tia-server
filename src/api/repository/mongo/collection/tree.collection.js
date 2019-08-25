@@ -147,31 +147,25 @@ const fetchTreeForIds = async (treeIDs) => {
   }
 };
 
-const updateTree = async (treeReq) => {
-  let multi = false;
-  if (Object.keys(treeReq).length > 1) {
-    multi = true;
-  }
-  try {
-    return await db.collection(database.collections.tree).update(
-      {
-        _id: ObjectID(treeReq.treeID),
-      },
-      {
-        $push: {
-          activityDetails: {
-            activity: activityType.updatePlant,
-            date: new Date().getTime(),
-          },
+const updateTree = (treeReq) => {
+  // let multi = false;
+  // if (Object.keys(treeReq).length > 1) {
+  //   multi = true;
+  // }
+  return db.collection(database.collections.tree).update(
+    {
+      _id: ObjectID(treeReq.treeID),
+    },
+    {
+      $push: {
+        activityDetails: {
+          activity: activityType.updatePlant,
+          date: new Date().getTime(),
         },
       },
-      {
-        $set: treeReq,
-      }
-    );
-  } catch (error) {
-    throw error;
-  }
+      $set: treeReq,
+    }
+  );
 };
 
 const queries = {
