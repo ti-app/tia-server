@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const TreeGroupService = require('../services/tree-group.service');
 const TreeService = require('../services/tree.service');
 const UploadService = require('../services/upload.service');
-const { activityType } = require('../constants/tree.constants');
+const { activityType } = require('../../constants');
 
 exports.createTreeGroup = async (req, res, next) => {
   try {
