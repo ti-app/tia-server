@@ -9,7 +9,7 @@ admin.initializeApp({
 });
 
 if (process.argv.length !== 4) {
-  throw Error('Invalid use of promote. Usage: node promote.js <email> <role>');
+  throw Error('Invalid use of promote. Usage: npm run promote <email> <role>');
 }
 const email = process.argv[2];
 const role = process.argv[3];
@@ -25,18 +25,13 @@ admin
   .auth()
   .getUserByEmail(email)
   .then((user) => {
-    if (user.customClaims.role) {
-      console.log('TCL: user.customClaims', user.customClaims);
-      process.exit(0);
-    }
-
     admin
       .auth()
       .setCustomUserClaims(user.uid, {
         role,
       })
       .then(() => {
-        console.log('Role has been added');
+        console.log('Role has been assigned.');
         process.exit(0);
       });
   });

@@ -7,11 +7,12 @@ module.exports = {
 
   database: {
     uri: process.env.DB_URI,
-    database: process.env.DB_DB_NAME,
+    database: process.env.DB_NAME,
     collections: {
-      tree: process.env.DB_TREE_COLLECTION,
-      site: process.env.DB_SITE_COLLECTION,
-      treeGroup: process.env.DB_TREE_GROUP_COLLECTION,
+      tree: 'tree',
+      site: 'site',
+      treeGroup: 'tree-group',
+      treeActivity: 'tree-activity',
     },
   },
   firebase: {
@@ -36,6 +37,7 @@ module.exports = {
   },
   roles: {
     MODERATOR: 'moderator',
+    USER: 'user',
   },
   treeHealth: {
     HEALTHY: 'healthy',
@@ -45,10 +47,10 @@ module.exports = {
     DEAD: 'almostDead',
   },
   activityType: {
-    addPlant: 'PLANT_ADDED',
-    deletePlant: 'PLANT_DELETED',
-    waterPlant: 'PLANT_WATERED',
-    updatePlant: 'PLANT_UPDATED',
-    fertilizePlant: 'PLANT_FERTILIZED',
+    addTree: 'TREE_ADDED',
+    deleteTree: 'TREE_DELETED',
+    waterTree: 'TREE_WATERED',
+    updateTree: 'TREE_UPDATED',
+    fertilizeTree: 'TREE_FERTILIZED',
   },
 };

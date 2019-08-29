@@ -2,7 +2,9 @@ const httpStatus = require('http-status');
 const TreeGroupService = require('../services/tree-group.service');
 const TreeService = require('../services/tree.service');
 const UploadService = require('../services/upload.service');
+const TreeActivityService = require('../services/tree-activity.service');
 const { activityType } = require('../../constants');
+const toArray = require('../utils/to-array');
 
 exports.createTreeGroup = async (req, res, next) => {
   try {
@@ -17,22 +19,23 @@ exports.createTreeGroup = async (req, res, next) => {
       });
     }
 
-    if (isCoordinateExists) {
-      TreeService.updateTree(req.body);
-    }
+    // if (isCoordinateExists) {
+    //   TreeService.updateTree(req.body);
+    // }
 
     let uploadedImage = {
       url: '',
       fileName: '',
     };
 
-    if (req.file && req.file != undefined) {
+    if (req.file && req.file !== undefined) {
       uploadedImage = await UploadService.uploadImageToStorage(req.file);
     }
 
     /**
      * Changing data format from form data to json
      */
+
     const treeGroup = {
       photo: uploadedImage.url,
       photoName: uploadedImage.fileName,
@@ -44,24 +47,17 @@ exports.createTreeGroup = async (req, res, next) => {
       healthCycle: Math.round(waterCycle),
       health,
       plants,
-      uploadedDate: new Date().getTime(),
-      uploadedUser: req.uid.user_id,
-      lastActivityDate: new Date().getTime(),
-      lastActedUser: req.uid.user_id,
+      createdAt: new Date().getTime(),
+      createdBy: req.user.user_id,
       owner: {
-        userId: req.uid.user_id,
-        displayName: req.uid.displayName,
+        userId: req.user.user_id,
+        displayName: req.user.displayName,
       },
+      lastActivityDate: new Date().getTime(),
+      lastActedUser: req.user.user_id,
       lastActivityType: activityType.addPlant,
-      activityDetails: [
-        {
-          activity: activityType.addPlant,
-          date: new Date().getTime(),
-          user: req.uid.displayName,
-        },
-      ],
       activeTrees: true,
-      moderatorApproved: TreeGroupService.addedByModerator(req.uid.role),
+      moderatorApproved: TreeGroupService.addedByModerator(req.user.role),
     };
 
     const treeGroupResult = await TreeGroupService.createTreeGroup(treeGroup);
@@ -76,14 +72,17 @@ exports.createTreeGroup = async (req, res, next) => {
       // treeGroup is getting mutated by insert method..i guess, as it is having _id
       delete aTreeToAdd._id;
       aTreeToAdd.groupId = groupId;
-      aTreeToAdd.meta = {
-        createdAt: new Date().getTime(),
-      };
       trees.push(aTreeToAdd);
     }
 
     const multipleTreeAddResult = await TreeService.addMultipleTrees(trees);
     await TreeGroupService.addTreesToGroup(multipleTreeAddResult.insertedIds, groupId);
+
+    await TreeActivityService.addTreeActivity(
+      toArray(multipleTreeAddResult.insertedIds),
+      activityType.addTree,
+      true
+    );
     res.status(httpStatus.OK).json({ groupId });
   } catch (e) {
     next(e);

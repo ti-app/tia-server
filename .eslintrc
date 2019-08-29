@@ -21,7 +21,8 @@
     "linebreak-style": "off",
     "object-curly-newline": "off",
     "arrow-body-style": "off",
-    "function-paren-newline": "off"
+    "function-paren-newline": "off",
+    "no-console": "off"
   },
   "env": {
     "node": true,
