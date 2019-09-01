@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const responses = require('../services/response.service');
+const Context = require('../services/context.service');
 const logger = require('../utils/logger');
 
 const { getFirebaseUidFromToken } = require('../utils/firebase.utils');
@@ -16,6 +17,7 @@ module.exports = (req, res, next) => {
       logger.debug('[authenticated-middleware] request is authenticated. user:', user);
       req.uid = user;
       req.user = user;
+      Context.set('user', user);
       next();
     })
     .catch((error) => {

@@ -6,9 +6,8 @@ const multer = require('../../../config/multer');
 
 const router = express.Router();
 
-router.route('/').get(controller.allTrees);
 router.route('/:treeID').put(multer.single('photo'), controller.updateTree);
-router.route('/:treeID/water').get(controller.waterByPlantID);
+router.route('/:treeID/water').get(controller.waterTree);
 router.route('/:treeID').delete(controller.deleteTree);
 
 module.exports = router;
