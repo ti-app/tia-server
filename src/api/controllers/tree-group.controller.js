@@ -51,7 +51,7 @@ exports.createTreeGroup = async (req, res, next) => {
       createdBy: req.user.user_id,
       owner: {
         userId: req.user.user_id,
-        displayName: req.user.displayName,
+        displayName: req.user.name,
       },
       lastActivityDate: new Date().getTime(),
       lastActedUser: req.user.user_id,
