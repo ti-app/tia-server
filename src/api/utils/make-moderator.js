@@ -25,6 +25,7 @@ admin
   .auth()
   .getUserByEmail(email)
   .then((user) => {
+    console.log('TCL: user', user);
     admin
       .auth()
       .setCustomUserClaims(user.uid, {
