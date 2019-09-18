@@ -1,28 +1,14 @@
 const repository = require('../repository');
+const TreeActivityService = require('../services/tree-activity.service');
 
 class TreeService {
-  addMultipleTrees(trees) {
+  async addMultipleTrees(trees) {
     return repository.addNewTrees(trees);
   }
 
-  allTrees(lat, lng, radius, health) {
-    return repository.fetchAllTrees(lat, lng, radius, health);
-  }
-
-  allTreesByLocation(lng, lat, distance) {
-    return repository.fetchAllTreesByLocation(lng, lat, distance);
-  }
-
-  updateTreeHealthByID(treeID) {
-    return repository.updateTreeAfterWatering(treeID);
-  }
-
-  deleteTree(treeID) {
-    return repository.deleteTree(treeID);
-  }
-
-  fetchTreeForIds(treeIDs) {
-    return repository.fetchTreeForIds(treeIDs);
+  async updateTree(treeID, updateBody, activityType) {
+    const activityRes = await TreeActivityService.addTreeActivity([treeID], activityType);
+    return repository.updateTree(treeID, updateBody);
   }
 }
 

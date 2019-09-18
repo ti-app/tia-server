@@ -3,7 +3,8 @@ module.exports = {
   corsOptions: {
     origin: (origin, callback) => {
       // In dev, allow these IPs to access the API
-      const whiteList = ['localhost', '0.0.0.0', '127.0.0.1', 'chrome-extension'];
+      const whiteList = ['localhost', '0.0.0.0', '127.0.0.1', 'chrome-extension', 'https://make-tia-moderator.web.app',
+        'https://make-tia-moderator.firebaseapp.com'];
       // We are doing string matching here.
       // For advanced use-case, use regex
       const index = whiteList.findIndex((anIP) => origin.includes(anIP));

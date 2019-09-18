@@ -2,31 +2,62 @@ const httpStatus = require('http-status');
 const TreeGroupService = require('../services/tree-group.service');
 const TreeService = require('../services/tree.service');
 const UploadService = require('../services/upload.service');
+const TreeActivityService = require('../services/tree-activity.service');
+const { activityType } = require('../../constants');
 const toArray = require('../utils/to-array');
-
-const uploadImage = async (file) => {
-  const uploadedImage = await UploadService.uploadImageToStorage(file);
-  return uploadedImage;
-};
 
 exports.createTreeGroup = async (req, res, next) => {
   try {
-    let uploadedImageURL = '';
-    if (req.file && req.file != undefined) {
-      uploadedImageURL = await uploadImage(req.file);
+    const { lat, lng, isCoordinateExists, health, plants, plantType, waterCycle } = req.body;
+
+    const isTreeExist = await TreeGroupService.isTreeExistOnCoordinate(lat, lng);
+    if (isTreeExist && !isCoordinateExists) {
+      const isCoordinateExists = true;
+      return res.status(httpStatus.ALREADY_REPORTED).json({
+        message: `Tree/ site Already exists on the request location. If you still wants to plant click on yes, click on NO and add the plant again.`,
+        isCoordinateExists,
+      });
+    }
+
+    // if (isCoordinateExists) {
+    //   TreeService.updateTree(req.body);
+    // }
+
+    let uploadedImage = {
+      url: '',
+      fileName: '',
+    };
+
+    if (req.file && req.file !== undefined) {
+      uploadedImage = await UploadService.uploadImageToStorage(req.file);
     }
 
     /**
      * Changing data format from form data to json
      */
+
     const treeGroup = {
-      photo: uploadedImageURL,
+      photo: uploadedImage.url,
+      photoName: uploadedImage.fileName,
       location: {
         type: 'Point',
-        coordinates: [parseFloat(req.body.lng), parseFloat(req.body.lat)],
+        coordinates: [parseFloat(lng), parseFloat(lat)],
       },
-      health: req.body.health,
-      plants: req.body.plants,
+      plantType,
+      healthCycle: Math.round(waterCycle),
+      health,
+      plants,
+      createdAt: new Date().getTime(),
+      createdBy: req.user.user_id,
+      owner: {
+        userId: req.user.user_id,
+        displayName: req.user.name,
+      },
+      lastActivityDate: new Date().getTime(),
+      lastActedUser: req.user.user_id,
+      lastActivityType: activityType.addPlant,
+      activeTrees: true,
+      moderatorApproved: TreeGroupService.addedByModerator(req.user.role),
     };
 
     const treeGroupResult = await TreeGroupService.createTreeGroup(treeGroup);
@@ -37,17 +68,21 @@ exports.createTreeGroup = async (req, res, next) => {
     for (let i = 0; i < numTrees; i += 1) {
       const aTreeToAdd = Object.assign({}, treeGroup);
       delete aTreeToAdd.plants;
+      delete aTreeToAdd.moderatorApproved;
       // treeGroup is getting mutated by insert method..i guess, as it is having _id
       delete aTreeToAdd._id;
       aTreeToAdd.groupId = groupId;
-      aTreeToAdd.meta = {
-        createdAt: new Date().getTime(),
-      };
       trees.push(aTreeToAdd);
     }
 
     const multipleTreeAddResult = await TreeService.addMultipleTrees(trees);
     await TreeGroupService.addTreesToGroup(multipleTreeAddResult.insertedIds, groupId);
+
+    await TreeActivityService.addTreeActivity(
+      toArray(multipleTreeAddResult.insertedIds),
+      activityType.addTree,
+      true
+    );
     res.status(httpStatus.OK).json({ groupId });
   } catch (e) {
     next(e);
@@ -56,21 +91,19 @@ exports.createTreeGroup = async (req, res, next) => {
 
 exports.getTreeGroups = async (req, res, next) => {
   try {
+    const { uid } = req;
     const { lat, lng, radius, health } = req.query;
-    const allTreeGroups = await TreeGroupService.fetchTreeGroups(lat, lng, radius, health);
-    const treeGroupResponse = [];
+    const allTreeGroups = await TreeGroupService.fetchTreeGroups(lat, lng, radius, health, uid);
+    res.status(httpStatus.OK).json(allTreeGroups);
+  } catch (e) {
+    next(e);
+  }
+};
 
-    for (aGroup of allTreeGroups) {
-      const allTreeIds = toArray(aGroup.treeIds);
-      const allTrees = await TreeService.fetchTreeForIds(allTreeIds);
-      const group = Object.assign({}, aGroup);
-      delete group.treeIds;
-      delete group.dist;
-      group.trees = allTrees;
-      treeGroupResponse.push(group);
-    }
-
-    res.status(httpStatus.OK).json(treeGroupResponse);
+exports.modActionOnTreeGroup = async (req, res, next) => {
+  try {
+    await TreeGroupService.updateModApprovalStatus(req.params.groupID, req.body.approve);
+    res.status(httpStatus.OK).json({ status: 'success' });
   } catch (e) {
     next(e);
   }

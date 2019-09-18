@@ -1,6 +1,8 @@
 const { MongoClient } = require('mongodb');
 const treeCollection = require('./collection/tree.collection');
+const siteCollection = require('./collection/site.collection');
 const treeGroupCollection = require('./collection/tree-group.collection');
+const treeActivityCollection = require('./collection/tree-activity.collection');
 
 const { database } = require('../../../constants');
 
@@ -46,10 +48,14 @@ const connect = () =>
   await connect();
   console.log('Connected with mongo client');
   treeCollection.setDatabase(db);
+  siteCollection.setDatabase(db);
   treeGroupCollection.setDatabase(db);
+  treeActivityCollection.setDatabase(db);
 })();
 
 module.exports = {
   ...treeCollection.queries,
+  ...siteCollection.queries,
   ...treeGroupCollection.queries,
+  ...treeActivityCollection.queries,
 };
