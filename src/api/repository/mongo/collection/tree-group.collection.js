@@ -119,12 +119,62 @@ const updateModApprovalStatus = (groupID, approve) => {
   );
 };
 
+const getTreesOfGroup = (treeId) => {
+  return db
+    .collection('tree')
+    .aggregate([
+      { $match: { _id: ObjectID(treeId) } },
+      { $project: { groupId: 1 } },
+      {
+        $lookup: {
+          from: 'tree-group',
+          let: { group_id: '$groupId' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$_id', '$$group_id'] } } },
+            {
+              $lookup: {
+                from: 'tree',
+                let: { group_id: '$_id' },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $and: [{ $eq: ['$groupId', '$$group_id'] }, { $ne: ['$deleted', true] }],
+                      },
+                    },
+                  },
+                ],
+                as: 'trees',
+              },
+            },
+          ],
+          as: 'group',
+        },
+      },
+      { $unwind: '$group' },
+    ])
+    .toArray();
+};
+
+const updateTreeGroup = (groupId, updateBody) => {
+  return db.collection(TREE_GROUP_COLLECTION).updateOne(
+    {
+      _id: ObjectID(groupId),
+    },
+    {
+      $set: updateBody,
+    }
+  );
+};
+
 const queries = {
   addNewTreeGroup,
   addTreesToGroup,
   fetchTreeGroups,
   isTreeExistOnCoordinate,
   updateModApprovalStatus,
+  getTreesOfGroup,
+  updateTreeGroup,
 };
 
 module.exports = { queries, setDatabase };
