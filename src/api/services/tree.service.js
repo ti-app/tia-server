@@ -1,5 +1,6 @@
 const repository = require('../repository');
 const TreeActivityService = require('../services/tree-activity.service');
+const common = require('../../constants/constants.common');
 
 class TreeService {
   async addMultipleTrees(trees) {
@@ -9,6 +10,10 @@ class TreeService {
   async updateTree(treeID, updateBody, activityType) {
     const activityRes = await TreeActivityService.addTreeActivity([treeID], activityType);
     return repository.updateTree(treeID, updateBody);
+  }
+
+  deletedByModerator(role) {
+    return role === common.roles.MODERATOR;
   }
 }
 
