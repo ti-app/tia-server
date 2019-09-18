@@ -5,6 +5,7 @@ const UploadService = require('../services/upload.service');
 const TreeActivityService = require('../services/tree-activity.service');
 const { activityType } = require('../../constants');
 const toArray = require('../utils/to-array');
+const { toTreeHealthValue } = require('../utils/common-utils');
 
 exports.createTreeGroup = async (req, res, next) => {
   try {
@@ -46,6 +47,7 @@ exports.createTreeGroup = async (req, res, next) => {
       plantType,
       healthCycle: Math.round(waterCycle),
       health,
+      healthValue: toTreeHealthValue(health),
       plants,
       createdAt: new Date().getTime(),
       createdBy: req.user.user_id,

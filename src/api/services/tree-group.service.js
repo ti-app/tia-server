@@ -25,6 +25,14 @@ class TreeGroupService {
   updateModApprovalStatus(groupID, approve) {
     return repository.updateModApprovalStatus(groupID, approve);
   }
+
+  getTreesOfGroup(groupId) {
+    return repository.getTreesOfGroup(groupId);
+  }
+
+  updateTreeGroup(groupId, updateBody) {
+    return repository.updateTreeGroup(groupId, updateBody);
+  }
 }
 
 module.exports = new TreeGroupService();
