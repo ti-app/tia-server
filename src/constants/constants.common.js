@@ -1,6 +1,23 @@
 /**
  * Common constants across all the environments (dev, staging, prod)
  */
+
+const TREE_HEALTH = {
+  HEALTHY: 'healthy',
+  ADEQUATE: 'adequate',
+  AVERAGE: 'average',
+  WEAK: 'weak',
+  DEAD: 'almostDead',
+};
+
+const TREE_HEALTH_VALUE = {
+  [TREE_HEALTH.HEALTHY]: 5,
+  [TREE_HEALTH.ADEQUATE]: 4,
+  [TREE_HEALTH.AVERAGE]: 3,
+  [TREE_HEALTH.WEAK]: 2,
+  [TREE_HEALTH.DEAD]: 1,
+};
+
 module.exports = {
   env: process.env.NODE_ENV,
   port: process.env.PORT,
@@ -39,13 +56,8 @@ module.exports = {
     MODERATOR: 'moderator',
     USER: 'user',
   },
-  treeHealth: {
-    HEALTHY: 'healthy',
-    ADEQUATE: 'adequate',
-    AVERAGE: 'average',
-    WEAK: 'weak',
-    DEAD: 'almostDead',
-  },
+  treeHealth: TREE_HEALTH,
+  treeHealthValue: TREE_HEALTH_VALUE,
   activityType: {
     addTree: 'TREE_ADDED',
     deleteTree: 'TREE_DELETED',

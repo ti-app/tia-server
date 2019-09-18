@@ -1,7 +1,9 @@
 const httpStatus = require('http-status');
 const TreeService = require('../services/tree.service');
+const TreeGroupService = require('../services/tree-group.service');
 const UploadService = require('../services/upload.service');
-const { activityType, treeHealth } = require('../../constants');
+const { activityType, treeHealth, treeHealthValue } = require('../../constants');
+const { toTreeHealth, toTreeHealthValue } = require('../utils/common-utils');
 
 exports.waterTree = async (req, res, next) => {
   const { treeID } = req.params;
@@ -10,13 +12,30 @@ exports.waterTree = async (req, res, next) => {
       treeID,
       {
         health: treeHealth.HEALTHY,
+        healthValue: toTreeHealthValue(treeHealth.HEALTHY),
         lastActivityDate: new Date().getTime(),
         lastActivityType: activityType.waterTree,
       },
       activityType.waterTree
     );
 
-    res.status(httpStatus.OK).json(updatedTree);
+    const result = await TreeGroupService.getTreesOfGroup(treeID);
+    const { _id: groupId, trees } = result[0].group;
+
+    let minHealth = Number.POSITIVE_INFINITY;
+
+    trees.forEach((aTree) => {
+      if (aTree.healthValue < minHealth) {
+        minHealth = aTree.healthValue;
+      }
+    });
+
+    const upatedTreGroupRes = await TreeGroupService.updateTreeGroup(groupId, {
+      health: toTreeHealth(minHealth),
+      healthValue: minHealth,
+    });
+
+    res.status(httpStatus.OK).json({ status: 'success' });
   } catch (e) {
     next(e);
   }
@@ -47,10 +66,10 @@ exports.updateTree = async (req, res, next) => {
     ...req.body,
   };
 
-  let uploadedImageURL = '';
   if (req.file && req.file !== undefined) {
-    uploadedImageURL = await UploadService.uploadImageToStorage(req.file);
-    treeUpdateBody.photo = uploadedImageURL;
+    const { url, fileName } = await UploadService.uploadImageToStorage(req.file);
+    treeUpdateBody.photo = url;
+    treeUpdateBody.photoName = fileName;
   }
 
   // uploadedUser never changes
