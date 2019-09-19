@@ -111,16 +111,21 @@ const isTreeExistOnCoordinate = (lat, lng) => {
 };
 
 const updateModApprovalStatus = (groupID, approve) => {
-  return db.collection(TREE_GROUP_COLLECTION).updateOne(
-    {
-      _id: ObjectID(groupID),
-    },
-    {
-      $set: {
-        moderatorApproved: approve,
+  if (approve) {
+    return db.collection(TREE_GROUP_COLLECTION).updateOne(
+      {
+        _id: ObjectID(groupID),
       },
-    }
-  );
+      {
+        $set: {
+          moderatorApproved: approve,
+        },
+      }
+    );
+  }
+  return db.collection(TREE_GROUP_COLLECTION).deleteOne({
+    _id: ObjectID(groupID),
+  });
 };
 
 const getTreesOfGroup = (treeId) => {
