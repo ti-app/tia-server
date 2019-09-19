@@ -47,7 +47,11 @@ exports.deleteTree = async (req, res, next) => {
     const deletedTree = await TreeService.updateTree(
       treeID,
       {
-        delete: { deleted: true, moderatorApproved: TreeService.deletedByModerator(req.user.role) },
+        delete: {
+          deleted: true,
+          deletedBy: req.user.user_id,
+          isModeratorApproved: TreeService.deletedByModerator(req.user.role),
+        },
       },
       activityType.deleteTree
     );

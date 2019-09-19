@@ -60,7 +60,11 @@ const fetchTreeGroups = async (lat, lng, radius, health, uid) => {
         {
           $match: {
             $expr: {
-              $and: [{ $eq: ['$groupId', '$$group_id'] }, { $ne: ['$deleted', true] }],
+              $and: [
+                { $eq: ['$groupId', '$$group_id'] },
+                { $ne: ['$delete.deleted', true] },
+                { $ne: ['$delete.isModeratorApproved', true] },
+              ],
             },
           },
         },
