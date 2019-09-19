@@ -25,10 +25,22 @@ const updateTree = (treeID, updateBody) => {
     }
   );
 };
-
+const updateModDeleteStatus = (treeID, deleteApprove) => {
+  return db.collection(TREE_COLLECTION_NAME).updateOne(
+    {
+      _id: ObjectID(treeID),
+    },
+    {
+      $set: {
+        'delete.isModeratorApproved': deleteApprove,
+      },
+    }
+  );
+};
 const queries = {
   addNewTrees,
   updateTree,
+  updateModDeleteStatus,
 };
 
 module.exports = { queries, setDatabase };

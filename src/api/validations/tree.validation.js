@@ -27,4 +27,9 @@ module.exports = {
       health: Joi.string(),
     },
   },
+  modAction: {
+    body: Joi.object({
+      delete: Joi.bool().required(),
+    }),
+  },
 };
