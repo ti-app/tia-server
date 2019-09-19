@@ -15,6 +15,10 @@ class TreeService {
   deletedByModerator(role) {
     return role === common.roles.MODERATOR;
   }
+
+  updateModDeleteStatus(treeID, deleteApprove) {
+    return repository.updateModDeleteStatus(treeID, deleteApprove);
+  }
 }
 
 module.exports = new TreeService();

@@ -92,3 +92,12 @@ exports.updateTree = async (req, res, next) => {
     next(e);
   }
 };
+
+exports.modActionOnTree = async (req, res, next) => {
+  try {
+    await TreeService.updateModDeleteStatus(req.params.treeID, req.body.deleteApprove);
+    res.status(httpStatus.OK).json({ status: 'success' });
+  } catch (e) {
+    next(e);
+  }
+};
