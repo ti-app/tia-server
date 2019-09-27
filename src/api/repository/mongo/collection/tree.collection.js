@@ -37,10 +37,25 @@ const updateModDeleteStatus = (treeID, deleteApprove) => {
     }
   );
 };
+
+const rejectTreeDelete = (treeID) => {
+  return db.collection(TREE_COLLECTION_NAME).updateOne(
+    {
+      _id: ObjectID(treeID),
+    },
+    {
+      $unset: {
+        delete: 1,
+      },
+    }
+  );
+};
+
 const queries = {
   addNewTrees,
   updateTree,
   updateModDeleteStatus,
+  rejectTreeDelete,
 };
 
 module.exports = { queries, setDatabase };
