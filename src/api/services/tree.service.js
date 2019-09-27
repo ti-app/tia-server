@@ -19,6 +19,10 @@ class TreeService {
   updateModDeleteStatus(treeID, deleteApprove) {
     return repository.updateModDeleteStatus(treeID, deleteApprove);
   }
+
+  rejectTreeDelete(treeID) {
+    return repository.rejectTreeDelete(treeID);
+  }
 }
 
 module.exports = new TreeService();
