@@ -61,7 +61,7 @@ const fetchSites = async (lat, lng, radius, uid) => {
     .toArray();
 };
 
-const updateTree = (siteID, updateBody) => {
+const updateSite = (siteID, updateBody) => {
   return db.collection(SITES_COLLECTION).updateOne(
     {
       _id: ObjectID(siteID),
@@ -71,11 +71,39 @@ const updateTree = (siteID, updateBody) => {
     }
   );
 };
+const updateModDeleteStatus = (siteID, deleteApprove) => {
+  return db.collection(SITES_COLLECTION).updateOne(
+    {
+      _id: ObjectID(siteID),
+    },
+    {
+      $set: {
+        'delete.isModeratorApproved': deleteApprove,
+      },
+    }
+  );
+};
+
+const rejectSiteDelete = (siteID) => {
+  return db.collection(SITES_COLLECTION).updateOne(
+    {
+      _id: ObjectID(siteID),
+    },
+    {
+      $unset: {
+        delete: 1,
+      },
+    }
+  );
+};
+
 const queries = {
   addNewSite,
   allSites,
   fetchSites,
-  updateTree,
+  updateSite,
+  updateModDeleteStatus,
+  rejectSiteDelete,
 };
 
 module.exports = { queries, setDatabase };

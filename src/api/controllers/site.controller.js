@@ -91,3 +91,16 @@ exports.deleteSite = async (req, res, next) => {
     next(e);
   }
 };
+exports.modActionOnSite = async (req, res, next) => {
+  try {
+    if (req.body.deleteApprove) {
+      await SiteService.updateModDeleteStatus(req.params.siteID, req.body.deleteApprove);
+      res.status(httpStatus.OK).json({ status: 'Delete approved' });
+    } else {
+      await SiteService.rejectSiteDelete(req.params.siteID);
+      res.status(httpStatus.OK).json({ status: 'Delete rejected' });
+    }
+  } catch (e) {
+    next(e);
+  }
+};

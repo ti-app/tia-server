@@ -16,7 +16,7 @@ class SiteService {
   }
   async updateSite(siteID, updateBody, activityType) {
     const activityRes = await SiteActivityService.addSiteActivity([siteID], activityType);
-    return repository.updateTree(siteID, updateBody);
+    return repository.updateSite(siteID, updateBody);
   }
   addedByModerator(role) {
     return role === common.roles.MODERATOR;
@@ -26,12 +26,12 @@ class SiteService {
     return role === common.roles.MODERATOR;
   }
 
-  updateModDeleteStatus(treeID, deleteApprove) {
-    return repository.updateModDeleteStatus(treeID, deleteApprove);
+  updateModDeleteStatus(siteID, deleteApprove) {
+    return repository.updateModDeleteStatus(siteID, deleteApprove);
   }
 
-  rejectSiteDelete(treeID) {
-    return repository.rejectTreeDelete(treeID);
+  rejectSiteDelete(siteID) {
+    return repository.rejectTreeDelete(siteID);
   }
 }
 
