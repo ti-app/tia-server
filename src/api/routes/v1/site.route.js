@@ -15,7 +15,7 @@ const router = express.Router();
 router.route('/').post(multer.single('photo'), controller.createSite);
 
 router.route('/').get(authenticated, controller.getSites);
-// router.route('/:siteID').put(multer.single('photo'), controller.updateSite);
+router.route('/:siteID').put(multer.single('photo'), controller.updateSite);
 router.route('/:siteID').delete(controller.deleteSite);
 router.route('/:siteID/mod-action').patch(
   permit(constants.roles.MODERATOR),

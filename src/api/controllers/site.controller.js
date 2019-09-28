@@ -91,6 +91,36 @@ exports.deleteSite = async (req, res, next) => {
     next(e);
   }
 };
+
+exports.updateSite = async (req, res, next) => {
+  const { siteID } = req.params;
+  const siteUpdateBody = {
+    ...req.body,
+  };
+
+  if (req.file && req.file !== undefined) {
+    const { url, fileName } = await UploadService.uploadImageToStorage(req.file);
+    siteUpdateBody.photo = url;
+    siteUpdateBody.photoName = fileName;
+  }
+
+  // uploadedUser never changes
+  delete siteUpdateBody.uploadedUser;
+  try {
+    const updatedSite = await SiteService.updateSite(
+      siteID,
+      siteUpdateBody,
+      activityType.updateSite
+    );
+
+    res.status(httpStatus.OK).json({
+      status: 'success',
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 exports.modActionOnSite = async (req, res, next) => {
   try {
     if (req.body.deleteApprove) {
