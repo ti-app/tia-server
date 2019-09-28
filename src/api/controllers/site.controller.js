@@ -5,7 +5,15 @@ const { activityType } = require('../../constants');
 
 exports.createSite = async (req, res, next) => {
   try {
-    const { type, wateringNearBy, numberOfPlants, soilQuality, lat, lng } = req.body;
+    const {
+      type,
+      wateringNearBy,
+      numberOfPlants,
+      soilQuality,
+      lat,
+      lng,
+      siteDisplayName,
+    } = req.body;
 
     let uploadedImage = {
       url: '',
@@ -26,7 +34,13 @@ exports.createSite = async (req, res, next) => {
       wateringNearBy,
       numberOfPlants,
       soilQuality,
-      addedByUser: req.uid.user_id,
+      siteDisplayName,
+      createdAt: new Date().getTime(),
+      createdBy: req.user.user_id,
+      owner: {
+        userId: req.user.user_id,
+        displayName: req.user.name,
+      },
       moderatorApproved: SiteService.addedByModerator(req.user.role),
     };
     SiteService.create(siteToAdd);
