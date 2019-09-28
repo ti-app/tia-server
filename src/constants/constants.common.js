@@ -64,5 +64,8 @@ module.exports = {
     waterTree: 'TREE_WATERED',
     updateTree: 'TREE_UPDATED',
     fertilizeTree: 'TREE_FERTILIZED',
+    addSite: 'SITE_ADDED',
+    deleteSite: 'SITE_DELETED',
+    updateSite: 'SITE_UPDATED',
   },
 };
