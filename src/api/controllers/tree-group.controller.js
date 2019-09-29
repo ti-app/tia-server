@@ -104,7 +104,24 @@ exports.getTreeGroups = async (req, res, next) => {
 
 exports.modActionOnTreeGroup = async (req, res, next) => {
   try {
-    await TreeGroupService.updateModApprovalStatus(req.params.groupID, req.body.approve);
+    if (req.body.approve) {
+      await TreeGroupService.updateModApprovalStatus(req.params.groupID, req.body.approve);
+      res.status(httpStatus.OK).json({ status: 'Tree Group approved by moderator' });
+    } else if (req.body.deleteApprove) {
+      await TreeGroupService.updateModDeleteStatus(req.params.groupID, req.body.deleteApprove);
+      res.status(httpStatus.OK).json({ status: 'Delete approved' });
+    } else if (!req.body.deleteApprove) {
+      await TreeGroupService.rejectTreeGroupDelete(req.params.groupID);
+      res.status(httpStatus.OK).json({ status: 'Delete rejected' });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.deleteTreeGroup = async (req, res, next) => {
+  try {
+    await TreeGroupService.deleteTreeGroup(req.params.groupID);
     res.status(httpStatus.OK).json({ status: 'success' });
   } catch (e) {
     next(e);

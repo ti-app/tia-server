@@ -52,6 +52,14 @@ const fetchTreeGroups = async (lat, lng, radius, health, uid) => {
     },
   };
 
+  const notDeleted = {
+    $match: {
+      $expr: {
+        $ne: ['$delete.isModeratorApproved', true],
+      },
+    },
+  };
+
   const lookupQuery = {
     $lookup: {
       from: 'tree',
@@ -90,7 +98,7 @@ const fetchTreeGroups = async (lat, lng, radius, health, uid) => {
   //   };
   // }
 
-  const aggregationPipeline = [geoNearOperator];
+  const aggregationPipeline = [geoNearOperator, notDeleted];
 
   if (uid.role !== roles.MODERATOR) {
     aggregationPipeline.push(onlyModApprovedTreeGroups);
@@ -176,6 +184,65 @@ const updateTreeGroup = (groupId, updateBody) => {
   );
 };
 
+const deleteTreeGroup = async (groupId, userId, isModeratorApproved) => {
+  const treeGroupRes = await db.collection(TREE_GROUP_COLLECTION).updateOne(
+    {
+      _id: ObjectID(groupId),
+    },
+    {
+      $set: {
+        delete: {
+          deleted: true,
+          deletedBy: userId,
+          isModeratorApproved,
+        },
+      },
+    }
+  );
+
+  return treeGroupRes;
+};
+
+const updateModDeleteStatus = async (groupId, deleteApprove) => {
+  const treeRes = await db.collection('tree').updateMany(
+    {
+      groupId: ObjectID(groupId),
+    },
+    {
+      $set: {
+        delete: {
+          deleted: true,
+          isModeratorApproved: true,
+        },
+      },
+    }
+  );
+
+  return db.collection(TREE_GROUP_COLLECTION).updateOne(
+    {
+      _id: ObjectID(groupId),
+    },
+    {
+      $set: {
+        'delete.isModeratorApproved': deleteApprove,
+      },
+    }
+  );
+};
+
+const rejectTreeGroupDelete = (groupId) => {
+  return db.collection(TREE_GROUP_COLLECTION).updateOne(
+    {
+      _id: ObjectID(groupId),
+    },
+    {
+      $unset: {
+        delete: 1,
+      },
+    }
+  );
+};
+
 const queries = {
   addNewTreeGroup,
   addTreesToGroup,
@@ -184,6 +251,9 @@ const queries = {
   updateModApprovalStatus,
   getTreesOfGroup,
   updateTreeGroup,
+  deleteTreeGroup,
+  updateModDeleteStatus,
+  rejectTreeGroupDelete,
 };
 
 module.exports = { queries, setDatabase };

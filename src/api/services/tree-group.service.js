@@ -1,5 +1,6 @@
 const repository = require('../repository');
 const common = require('../../constants/constants.common');
+const Context = require('../services/context.service');
 
 class TreeGroupService {
   createTreeGroup(treeGroup) {
@@ -32,6 +33,20 @@ class TreeGroupService {
 
   updateTreeGroup(groupId, updateBody) {
     return repository.updateTreeGroup(groupId, updateBody);
+  }
+
+  deleteTreeGroup(groupId) {
+    const user = Context.get('user');
+    const isRequestModApproved = user.role === common.roles.MODERATOR;
+    return repository.deleteTreeGroup(groupId, user.user_id, isRequestModApproved);
+  }
+
+  updateModDeleteStatus(groupId, deleteApprove) {
+    return repository.updateModDeleteStatus(groupId, deleteApprove);
+  }
+
+  rejectTreeGroupDelete(groupId) {
+    return repository.rejectTreeGroupDelete(groupId);
   }
 }
 
