@@ -1,5 +1,5 @@
 const { ObjectID } = require('mongodb');
-const { database } = require('../../../../constants');
+const { database, roles } = require('../../../../constants');
 
 let db = null;
 const SITES_COLLECTION = database.collections.site;
@@ -53,8 +53,11 @@ const fetchSites = async (lat, lng, radius, uid) => {
       },
     },
   };
-  const aggregationPipeline = [geoNearOperator, onlyModApprovedSites, notDeleted];
-
+  const aggregationPipeline = [geoNearOperator, notDeleted];
+  // Check if current role is moderator or not
+  if (uid.role !== roles.MODERATOR) {
+    aggregationPipeline.push(onlyModApprovedSites);
+  }
   return db
     .collection(SITES_COLLECTION)
     .aggregate(aggregationPipeline)
