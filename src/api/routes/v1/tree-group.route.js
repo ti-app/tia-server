@@ -15,12 +15,12 @@ const router = express.Router();
 router.route('/').post(multer.single('photo'), controller.createTreeGroup);
 router.route('/').get(controller.getTreeGroups);
 
-router
-  .route('/:groupID/mod-action')
-  .patch(
-    permit(constants.roles.MODERATOR),
-    validate(validation.modAction),
-    controller.modActionOnTreeGroup
-  );
+router.route('/:groupID/mod-action').patch(
+  permit(constants.roles.MODERATOR),
+  // validate(validation.modAction),
+  controller.modActionOnTreeGroup
+);
+
+router.route('/:groupID').delete(controller.deleteTreeGroup);
 
 module.exports = router;
