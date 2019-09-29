@@ -34,7 +34,7 @@ class SiteService {
   }
 
   rejectSiteDelete(siteID) {
-    return repository.rejectTreeDelete(siteID);
+    return repository.rejectSiteDelete(siteID);
   }
 }
 
