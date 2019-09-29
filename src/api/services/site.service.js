@@ -18,6 +18,9 @@ class SiteService {
     const activityRes = await SiteActivityService.addSiteActivity([siteID], activityType);
     return repository.updateSite(siteID, updateBody);
   }
+  updateModApprovalStatus(siteID, approve) {
+    return repository.updateSiteModApprovalStatus(siteID, approve);
+  }
   addedByModerator(role) {
     return role === common.roles.MODERATOR;
   }
