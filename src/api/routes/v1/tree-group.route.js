@@ -22,5 +22,6 @@ router.route('/:groupID/mod-action').patch(
 );
 
 router.route('/:groupID').delete(controller.deleteTreeGroup);
+router.route('/:groupID/water').get(controller.waterTreeGroup);
 
 module.exports = router;

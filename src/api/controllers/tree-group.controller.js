@@ -3,7 +3,7 @@ const TreeGroupService = require('../services/tree-group.service');
 const TreeService = require('../services/tree.service');
 const UploadService = require('../services/upload.service');
 const TreeActivityService = require('../services/tree-activity.service');
-const { activityType } = require('../../constants');
+const { activityType, treeHealth, treeHealthValue } = require('../../constants');
 const toArray = require('../utils/to-array');
 const { toTreeHealthValue } = require('../utils/common-utils');
 
@@ -122,6 +122,22 @@ exports.modActionOnTreeGroup = async (req, res, next) => {
 exports.deleteTreeGroup = async (req, res, next) => {
   try {
     await TreeGroupService.deleteTreeGroup(req.params.groupID);
+    res.status(httpStatus.OK).json({ status: 'success' });
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.waterTreeGroup = async (req, res, next) => {
+  const { groupID } = req.params;
+  try {
+    await TreeGroupService.updateTreeGroup(groupID, {
+      health: treeHealth.HEALTHY,
+      healthValue: toTreeHealthValue(treeHealth.HEALTHY),
+    });
+
+    await TreeGroupService.waterTreesOfGroup(groupID);
+
     res.status(httpStatus.OK).json({ status: 'success' });
   } catch (e) {
     next(e);
