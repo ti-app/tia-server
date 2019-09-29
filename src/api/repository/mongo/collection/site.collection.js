@@ -100,6 +100,27 @@ const rejectSiteDelete = (siteID) => {
   );
 };
 
+const updateSiteModApprovalStatus = async (siteID, approve) => {
+  let response;
+  if (approve) {
+    response = await db.collection(SITES_COLLECTION).updateOne(
+      {
+        _id: ObjectID(siteID),
+      },
+      {
+        $set: {
+          moderatorApproved: approve,
+        },
+      }
+    );
+  } else {
+    response = await db.collection(SITES_COLLECTION).remove({
+      _id: ObjectID(siteID),
+    });
+  }
+  return response;
+};
+
 const queries = {
   addNewSite,
   allSites,
@@ -107,6 +128,7 @@ const queries = {
   updateSite,
   updateModDeleteStatus,
   rejectSiteDelete,
+  updateSiteModApprovalStatus,
 };
 
 module.exports = { queries, setDatabase };

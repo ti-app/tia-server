@@ -123,10 +123,13 @@ exports.updateSite = async (req, res, next) => {
 
 exports.modActionOnSite = async (req, res, next) => {
   try {
-    if (req.body.deleteApprove) {
+    if ('approve' in req.body) {
+      await SiteService.updateModApprovalStatus(req.params.siteID, req.body.approve);
+      res.status(httpStatus.OK).json({ status: 'Site approved by moderator' });
+    } else if (req.body.deleteApprove) {
       await SiteService.updateModDeleteStatus(req.params.siteID, req.body.deleteApprove);
       res.status(httpStatus.OK).json({ status: 'Delete approved' });
-    } else {
+    } else if (!req.body.deleteApprove) {
       await SiteService.rejectSiteDelete(req.params.siteID);
       res.status(httpStatus.OK).json({ status: 'Delete rejected' });
     }
