@@ -1,6 +1,7 @@
 const repository = require('../repository');
-const common = require('../../constants/constants.common');
+const { roles, treeHealth, activityType } = require('../../constants/constants.common');
 const Context = require('../services/context.service');
+const { toTreeHealthValue } = require('../utils/common-utils');
 
 class TreeGroupService {
   createTreeGroup(treeGroup) {
@@ -20,7 +21,7 @@ class TreeGroupService {
   }
 
   addedByModerator(role) {
-    return role === common.roles.MODERATOR;
+    return role === roles.MODERATOR;
   }
 
   updateModApprovalStatus(groupID, approve) {
@@ -37,7 +38,7 @@ class TreeGroupService {
 
   deleteTreeGroup(groupId) {
     const user = Context.get('user');
-    const isRequestModApproved = user.role === common.roles.MODERATOR;
+    const isRequestModApproved = user.role === roles.MODERATOR;
     return repository.deleteTreeGroup(groupId, user.user_id, isRequestModApproved);
   }
 
@@ -47,6 +48,17 @@ class TreeGroupService {
 
   rejectTreeGroupDelete(groupId) {
     return repository.rejectTreeGroupDelete(groupId);
+  }
+
+  waterTreesOfGroup(groupId) {
+    const treeHealthObj = {
+      health: treeHealth.HEALTHY,
+      healthValue: toTreeHealthValue(treeHealth.HEALTHY),
+      lastActivityDate: new Date().getTime(),
+      lastActivityType: activityType.waterTree,
+    };
+
+    return repository.waterTreesOfGroup(groupId, treeHealthObj);
   }
 }
 

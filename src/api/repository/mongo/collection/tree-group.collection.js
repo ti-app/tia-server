@@ -243,6 +243,17 @@ const rejectTreeGroupDelete = (groupId) => {
   );
 };
 
+const waterTreesOfGroup = (groupId, updateBody) => {
+  return db.collection('tree').updateMany(
+    {
+      groupId: ObjectID(groupId),
+    },
+    {
+      $set: updateBody,
+    }
+  );
+};
+
 const queries = {
   addNewTreeGroup,
   addTreesToGroup,
@@ -254,6 +265,7 @@ const queries = {
   deleteTreeGroup,
   updateModDeleteStatus,
   rejectTreeGroupDelete,
+  waterTreesOfGroup,
 };
 
 module.exports = { queries, setDatabase };
