@@ -58,6 +58,11 @@ module.exports = {
   },
   treeHealth: TREE_HEALTH,
   treeHealthValue: TREE_HEALTH_VALUE,
+  userRatingWeigh: {
+    treeActivities: 1,
+    treeCare: 2,
+    treeWatering: 5,
+  },
   activityType: {
     addTree: 'TREE_ADDED',
     deleteTree: 'TREE_DELETED',
