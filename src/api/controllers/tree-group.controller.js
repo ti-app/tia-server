@@ -3,22 +3,22 @@ const TreeGroupService = require('../services/tree-group.service');
 const TreeService = require('../services/tree.service');
 const UploadService = require('../services/upload.service');
 const TreeActivityService = require('../services/tree-activity.service');
-const { activityType, treeHealth, treeHealthValue } = require('../../constants');
+const { activityType, treeHealth } = require('../../constants');
 const toArray = require('../utils/to-array');
 const { toTreeHealthValue } = require('../utils/common-utils');
 
 exports.createTreeGroup = async (req, res, next) => {
   try {
-    const { lat, lng, isCoordinateExists, health, plants, plantType, waterCycle } = req.body;
+    const { isCoordinateExists, health, plantType, waterCycle, trees, distribution } = req.body;
 
-    const isTreeExist = await TreeGroupService.isTreeExistOnCoordinate(lat, lng);
-    if (isTreeExist && !isCoordinateExists) {
-      const isCoordinateExists = true;
-      return res.status(httpStatus.ALREADY_REPORTED).json({
-        message: `Tree/ site Already exists on the request location. If you still wants to plant click on yes, click on NO and add the plant again.`,
-        isCoordinateExists,
-      });
-    }
+    // const isTreeExist = await TreeGroupService.isTreeExistOnCoordinate(lat, lng);
+    // if (isTreeExist && !isCoordinateExists) {
+    //   const isCoordinateExists = true;
+    //   return res.status(httpStatus.ALREADY_REPORTED).json({
+    //     message: `Tree/ site Already exists on the request location. If you still wants to plant click on yes, click on NO and add the plant again.`,
+    //     isCoordinateExists,
+    //   });
+    // }
 
     // if (isCoordinateExists) {
     //   TreeService.updateTree(req.body);
@@ -33,51 +33,62 @@ exports.createTreeGroup = async (req, res, next) => {
       uploadedImage = await UploadService.uploadImageToStorage(req.file);
     }
 
-    /**
-     * Changing data format from form data to json
-     */
+    const distributedTrees = JSON.parse(trees); // [{},{},...]
+    const treeGroupLocation = distributedTrees[0]; // a location for tree group marker
 
-    const treeGroup = {
+    const commonValues = {
       photo: uploadedImage.url,
       photoName: uploadedImage.fileName,
-      location: {
-        type: 'Point',
-        coordinates: [parseFloat(lng), parseFloat(lat)],
-      },
-      plantType,
-      healthCycle: Math.round(waterCycle),
       health,
+      healthCycle: Math.round(waterCycle),
       healthValue: toTreeHealthValue(health),
-      plants,
       createdAt: new Date().getTime(),
       createdBy: req.user.user_id,
-      owner: {
-        userId: req.user.user_id,
-        displayName: req.user.name,
-      },
       lastActivityDate: new Date().getTime(),
       lastActedUser: req.user.user_id,
-      lastActivityType: activityType.addPlant,
+      lastActivityType: activityType.addTree,
+      owner: {
+        userId: req.user.user_id,
+        displayName: req.user.name || req.user.email,
+      },
+    };
+
+    const treeGroup = {
+      ...commonValues,
+      location: {
+        type: 'Point',
+        coordinates: [parseFloat(treeGroupLocation.lng), parseFloat(treeGroupLocation.lat)],
+      },
       activeTrees: true,
+      distribution,
       moderatorApproved: TreeGroupService.addedByModerator(req.user.role),
     };
 
     const treeGroupResult = await TreeGroupService.createTreeGroup(treeGroup);
     const groupId = treeGroupResult.insertedId;
 
-    const numTrees = treeGroup.plants;
-    const trees = [];
-    for (let i = 0; i < numTrees; i += 1) {
-      const aTreeToAdd = Object.assign({}, treeGroup);
-      delete aTreeToAdd.plants;
-      delete aTreeToAdd.moderatorApproved;
-      // treeGroup is getting mutated by insert method..i guess, as it is having _id
-      delete aTreeToAdd._id;
-      aTreeToAdd.groupId = groupId;
-      trees.push(aTreeToAdd);
-    }
+    // const numTrees = distributedTrees.length;
+    // const trees = [];
+    // for (let i = 0; i < numTrees; i += 1) {
+    //   const aTreeToAdd = Object.assign({}, treeGroup);
+    //   // delete aTreeToAdd.moderatorApproved;
+    //   // treeGroup is getting mutated by insert method..i guess, as it is having _id
+    //   delete aTreeToAdd._id;
+    //   aTreeToAdd.groupId = groupId;
+    //   trees.push(aTreeToAdd);
+    // }
 
-    const multipleTreeAddResult = await TreeService.addMultipleTrees(trees);
+    const treesToBeAddedToGroup = distributedTrees.map((aTree) => ({
+      ...commonValues,
+      groupId,
+      plantType,
+      location: {
+        type: 'Point',
+        coordinates: [parseFloat(aTree.lng), parseFloat(aTree.lat)],
+      },
+    }));
+
+    const multipleTreeAddResult = await TreeService.addMultipleTrees(treesToBeAddedToGroup);
     await TreeGroupService.addTreesToGroup(multipleTreeAddResult.insertedIds, groupId);
 
     await TreeActivityService.addTreeActivity(
