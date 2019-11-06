@@ -1,0 +1,17 @@
+{
+  "swagger": {
+    "outputDirectory": "./dist",
+    "entryFile": "./src/config/express.ts",
+    "host": "localhost:3000",
+    "basePath": "/v1",
+    "noImplicitAdditionalProperties": "silently-remove-extras",
+    "yaml": true,
+    "specVersion": 3
+  },
+  "routes": {
+    "basePath": "/v1",
+    "entryFile": "./src/config/express.ts",
+    "routesDir": "./src/api/routes",
+    "middleware": "express"
+  }
+}
