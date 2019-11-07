@@ -3,7 +3,7 @@ import { CustomModuleLoader } from './custom-module-loader';
 // Path aliases work only with TS,
 // To resolve aliases present in tsconfig.js after build,
 // 'module-alias' package is being used.
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' || process.env.DEBUG === 'debug') {
   let moduleLoader = new CustomModuleLoader();
   console.log('Resolving path aliases for prod build...', process.env.NODE_ENV);
 }
