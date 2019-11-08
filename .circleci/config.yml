@@ -29,7 +29,7 @@ jobs:
       - PROJECT_NAME: "tia-server"
       - GOOGLE_PROJECT_ID: "project-tia-233318"
       - GOOGLE_COMPUTE_ZONE: "asia-southeast1-a"
-      - GOOGLE_CLUSTER_NAME: "standard-cluster-1"
+      - GOOGLE_CLUSTER_NAME: "tia-prod-cluster-1"
     steps:
       - checkout
       - run:
