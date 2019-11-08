@@ -46,7 +46,13 @@ exports.deleteTree = async (req, res, next) => {
   try {
     const deletedTree = await TreeService.updateTree(
       treeID,
-      { deleted: true },
+      {
+        delete: {
+          deleted: true,
+          deletedBy: req.user.user_id,
+          isModeratorApproved: TreeService.deletedByModerator(req.user.role),
+        },
+      },
       activityType.deleteTree
     );
 
@@ -82,6 +88,20 @@ exports.updateTree = async (req, res, next) => {
     res.status(httpStatus.OK).json({
       status: 'success',
     });
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.modActionOnTree = async (req, res, next) => {
+  try {
+    if (req.body.deleteApprove) {
+      await TreeService.updateModDeleteStatus(req.params.treeID, req.body.deleteApprove);
+      res.status(httpStatus.OK).json({ status: 'Delete approved' });
+    } else {
+      await TreeService.rejectTreeDelete(req.params.treeID);
+      res.status(httpStatus.OK).json({ status: 'Delete rejected' });
+    }
   } catch (e) {
     next(e);
   }

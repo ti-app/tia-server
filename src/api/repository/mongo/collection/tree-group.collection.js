@@ -52,6 +52,14 @@ const fetchTreeGroups = async (lat, lng, radius, health, uid) => {
     },
   };
 
+  const notDeleted = {
+    $match: {
+      $expr: {
+        $ne: ['$delete.isModeratorApproved', true],
+      },
+    },
+  };
+
   const lookupQuery = {
     $lookup: {
       from: 'tree',
@@ -60,7 +68,11 @@ const fetchTreeGroups = async (lat, lng, radius, health, uid) => {
         {
           $match: {
             $expr: {
-              $and: [{ $eq: ['$groupId', '$$group_id'] }, { $ne: ['$deleted', true] }],
+              $and: [
+                { $eq: ['$groupId', '$$group_id'] },
+                // { $ne: ['$delete.deleted', true] },
+                { $ne: ['$delete.isModeratorApproved', true] },
+              ],
             },
           },
         },
@@ -86,7 +98,7 @@ const fetchTreeGroups = async (lat, lng, radius, health, uid) => {
   //   };
   // }
 
-  const aggregationPipeline = [geoNearOperator];
+  const aggregationPipeline = [geoNearOperator, notDeleted];
 
   if (uid.role !== roles.MODERATOR) {
     aggregationPipeline.push(onlyModApprovedTreeGroups);
@@ -107,16 +119,21 @@ const isTreeExistOnCoordinate = (lat, lng) => {
 };
 
 const updateModApprovalStatus = (groupID, approve) => {
-  return db.collection(TREE_GROUP_COLLECTION).updateOne(
-    {
-      _id: ObjectID(groupID),
-    },
-    {
-      $set: {
-        moderatorApproved: approve,
+  if (approve) {
+    return db.collection(TREE_GROUP_COLLECTION).updateOne(
+      {
+        _id: ObjectID(groupID),
       },
-    }
-  );
+      {
+        $set: {
+          moderatorApproved: approve,
+        },
+      }
+    );
+  }
+  return db.collection(TREE_GROUP_COLLECTION).deleteOne({
+    _id: ObjectID(groupID),
+  });
 };
 
 const getTreesOfGroup = (treeId) => {
@@ -167,6 +184,76 @@ const updateTreeGroup = (groupId, updateBody) => {
   );
 };
 
+const deleteTreeGroup = async (groupId, userId, isModeratorApproved) => {
+  const treeGroupRes = await db.collection(TREE_GROUP_COLLECTION).updateOne(
+    {
+      _id: ObjectID(groupId),
+    },
+    {
+      $set: {
+        delete: {
+          deleted: true,
+          deletedBy: userId,
+          isModeratorApproved,
+        },
+      },
+    }
+  );
+
+  return treeGroupRes;
+};
+
+const updateModDeleteStatus = async (groupId, deleteApprove) => {
+  const treeRes = await db.collection('tree').updateMany(
+    {
+      groupId: ObjectID(groupId),
+    },
+    {
+      $set: {
+        delete: {
+          deleted: true,
+          isModeratorApproved: true,
+        },
+      },
+    }
+  );
+
+  return db.collection(TREE_GROUP_COLLECTION).updateOne(
+    {
+      _id: ObjectID(groupId),
+    },
+    {
+      $set: {
+        'delete.isModeratorApproved': deleteApprove,
+      },
+    }
+  );
+};
+
+const rejectTreeGroupDelete = (groupId) => {
+  return db.collection(TREE_GROUP_COLLECTION).updateOne(
+    {
+      _id: ObjectID(groupId),
+    },
+    {
+      $unset: {
+        delete: 1,
+      },
+    }
+  );
+};
+
+const waterTreesOfGroup = (groupId, updateBody) => {
+  return db.collection('tree').updateMany(
+    {
+      groupId: ObjectID(groupId),
+    },
+    {
+      $set: updateBody,
+    }
+  );
+};
+
 const queries = {
   addNewTreeGroup,
   addTreesToGroup,
@@ -175,6 +262,10 @@ const queries = {
   updateModApprovalStatus,
   getTreesOfGroup,
   updateTreeGroup,
+  deleteTreeGroup,
+  updateModDeleteStatus,
+  rejectTreeGroupDelete,
+  waterTreesOfGroup,
 };
 
 module.exports = { queries, setDatabase };

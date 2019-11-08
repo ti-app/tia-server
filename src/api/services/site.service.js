@@ -1,13 +1,41 @@
 const repository = require('../repository');
+const SiteActivityService = require('../services/site-activity.service');
+const common = require('../../constants/constants.common');
 
 class SiteService {
-  static create(site) {
+  create(site) {
     repository.addNewSite(site);
   }
 
-  static allSites() {
+  allSites() {
     return repository.allSites();
+  }
+
+  fetchSites(lat, lng, radius, uid) {
+    return repository.fetchSites(lat, lng, radius, uid);
+  }
+  async updateSite(siteID, updateBody, activityType) {
+    const activityRes = await SiteActivityService.addSiteActivity([siteID], activityType);
+    return repository.updateSite(siteID, updateBody);
+  }
+  updateModApprovalStatus(siteID, approve) {
+    return repository.updateSiteModApprovalStatus(siteID, approve);
+  }
+  addedByModerator(role) {
+    return role === common.roles.MODERATOR;
+  }
+
+  deletedByModerator(role) {
+    return role === common.roles.MODERATOR;
+  }
+
+  updateModDeleteStatus(siteID, deleteApprove) {
+    return repository.updateModDeleteStatus(siteID, deleteApprove);
+  }
+
+  rejectSiteDelete(siteID) {
+    return repository.rejectSiteDelete(siteID);
   }
 }
 
-module.exports = { SiteService };
+module.exports = new SiteService();
