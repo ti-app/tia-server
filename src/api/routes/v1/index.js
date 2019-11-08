@@ -6,6 +6,7 @@ const siteRoutes = require('./site.route');
 const treeGroupRoutes = require('./tree-group.route');
 const authorizationRoutes = require('./authorization.route');
 const authenticated = require('../../middlewares/authenticated');
+const userRoutes = require('./user.route');
 
 const router = express.Router();
 
@@ -18,4 +19,6 @@ router.use('/tree', authenticated, treeRoutes);
 router.use('/tree_group', authenticated, treeGroupRoutes);
 router.use('/site', authenticated, siteRoutes);
 router.use('/authorization', authorizationRoutes);
+router.use('/user', authenticated, userRoutes);
+
 module.exports = router;
