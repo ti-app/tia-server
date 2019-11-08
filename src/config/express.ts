@@ -23,7 +23,7 @@ const app = express();
 // TODO: Include CSRF middlewares here
 
 // request logging. dev: console | production: file
-app.use(requestLogger);
+// app.use(requestLogger);
 // app.use(morgan('dev'));
 
 // parse body params and attache them to req.body

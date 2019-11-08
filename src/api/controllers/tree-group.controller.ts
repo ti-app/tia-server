@@ -1,21 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
-import TreeGroupService from '../services/tree-group.service';
-import TreeService from '../services/tree.service';
-import UploadService from '../services/upload.service';
-import TreeActivityService from '../services/tree-activity.service';
+import TreeGroupService from '@services/tree-group.service';
+import TreeService from '@services/tree.service';
+import UploadService from '@services/upload.service';
+import TreeActivityService from '@services/tree-activity.service';
 import constants from '@constants';
 import toArray from '@utils/to-array';
 import { toTreeHealthValue } from '@utils/common-utils';
-import { AuthRequest, FileRequest } from '@appTypes/auth';
-import { parse } from 'dotenv';
+import { AuthRequest, CreateTreeGroupRequest } from '@appTypes/requests';
 
 const { activityType, treeHealth } = constants;
 
-export const createTreeGroup = async (req: FileRequest, res: Response, next: NextFunction) => {
+export const createTreeGroup = async (
+  req: CreateTreeGroupRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const { isCoordinateExists, health, plantType, waterCycle, trees, distribution } = req.body;
-
+    // const { isCoordinateExists, health, plantType, waterCycle, trees, distribution } = req.body;
+    const { health, waterCycle, trees, distribution } = req.body;
     // const isTreeExist = await TreeGroupService.isTreeExistOnCoordinate(lat, lng);
     // if (isTreeExist && !isCoordinateExists) {
     //   const isCoordinateExists = true;
@@ -38,8 +41,11 @@ export const createTreeGroup = async (req: FileRequest, res: Response, next: Nex
       uploadedImage = await UploadService.uploadImageToStorage(req.file);
     }
 
-    const distributedTrees = JSON.parse(trees); // [{},{},...]
+    const distributedTrees = trees; // [{},{},...]
     const treeGroupLocation = distributedTrees[0]; // a location for tree group marker
+
+    // const distributedTrees = JSON.parse(trees); // [{},{},...]
+    // const treeGroupLocation = distributedTrees[0]; // a location for tree group marker
 
     const commonValues = {
       photo: uploadedImage.url,
@@ -62,7 +68,8 @@ export const createTreeGroup = async (req: FileRequest, res: Response, next: Nex
       ...commonValues,
       location: {
         type: 'Point',
-        coordinates: [parseFloat(treeGroupLocation.lng), parseFloat(treeGroupLocation.lat)],
+        coordinates: [treeGroupLocation.lng, treeGroupLocation.lat],
+        // coordinates: [parseFloat(treeGroupLocation.lng), parseFloat(treeGroupLocation.lat)],
       },
       activeTrees: true,
       distribution,
@@ -86,7 +93,7 @@ export const createTreeGroup = async (req: FileRequest, res: Response, next: Nex
     const treesToBeAddedToGroup = distributedTrees.map((aTree: any) => ({
       ...commonValues,
       groupId,
-      plantType,
+      // plantType,
       location: {
         type: 'Point',
         coordinates: [parseFloat(aTree.lng), parseFloat(aTree.lat)],

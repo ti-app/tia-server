@@ -1,7 +1,4 @@
-import express from 'express';
-import validate from 'express-validation';
-
-// const validation = require('../../validations/tree-group.validation');
+import express, { Request, Response, NextFunction } from 'express';
 import {
   createTreeGroup,
   getTreeGroups,
@@ -12,13 +9,21 @@ import {
 import { permit } from '../../middlewares/permission';
 import multer from '../../../config/multer';
 import constants from '@constants';
+import { requestValidator, RequestField } from '../../middlewares/request-validator';
+import { CreateTreeGroup } from 'models/TreeGroup';
 
 const router = express.Router();
 
 /**
  * multer middleware is used to create a file reference
  */
-router.route('/').post(multer.single('photo'), createTreeGroup);
+router
+  .route('/')
+  .post(
+    multer.single('photo'),
+    requestValidator(RequestField.BODY, CreateTreeGroup, true),
+    createTreeGroup
+  );
 router.route('/').get(getTreeGroups);
 
 router.route('/:groupID/mod-action').patch(

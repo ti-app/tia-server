@@ -8,6 +8,7 @@ if (process.env.NODE_ENV === 'production' || process.env.DEBUG === 'debug') {
   console.log('Resolving path aliases for prod build...', process.env.NODE_ENV);
 }
 
+import 'reflect-metadata';
 import constants from '@constants';
 import logger from '@logger';
 import app from './config/express';
