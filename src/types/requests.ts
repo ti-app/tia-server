@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { CreateTreeGroup } from 'models/TreeGroup';
+import { CreateTreeGroup } from '@models/TreeGroup';
 
 export interface AuthRequest extends Request {
   user: any;

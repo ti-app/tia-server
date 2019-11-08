@@ -10,7 +10,7 @@ import { permit } from '../../middlewares/permission';
 import multer from '../../../config/multer';
 import constants from '@constants';
 import { requestValidator, RequestField } from '../../middlewares/request-validator';
-import { CreateTreeGroup } from 'models/TreeGroup';
+import { CreateTreeGroup } from '@models/TreeGroup';
 
 const router = express.Router();
 
