@@ -5,7 +5,7 @@ module.exports = {
       const whiteList = [
         'localhost',
         'tia-server.herokuapp.com',
-        '35.197.134.56',
+        '34.87.125.234',
         'chrome-extension',
         'https://make-tia-moderator.web.app',
         'https://make-tia-moderator.firebaseapp.com',
