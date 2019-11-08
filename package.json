@@ -4,7 +4,7 @@
   "description": "API server for TIA",
   "main": "build/index.js",
   "scripts": {
-    "start": "yarn build && cross-env NODE_ENV=production node build/index.js",
+    "start": "npm build && cross-env NODE_ENV=production node build/index.js",
     "dev": "nodemon src/index.ts",
     "lint": "eslint **/*.ts --ignore-path .gitignore --ignore-pattern internals/scripts",
     "test": "cross-env NODE_ENV=test jest --watch",
