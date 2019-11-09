@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Body, Controller, Get, Header, Path, Post, Query, Route, SuccessResponse } from 'tsoa';
 import httpStatus from 'http-status';
 import TreeService from '@services/tree.service';
+import TreeActivityService from '@services/tree-activity.service';
 import TreeGroupService from '@services/tree-group.service';
 import UploadService from '@services/upload.service';
 
@@ -108,6 +109,16 @@ export const modActionOnTree = async (req: Request, res: Response, next: NextFun
       await TreeService.rejectTreeDelete(req.params.treeId);
       res.status(httpStatus.OK).json({ status: 'Delete rejected' });
     }
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const treeActivity = async (req: Request, res: Response, next: NextFunction) => {
+  const { treeId } = req.params;
+  try {
+    const treeActivity = await TreeActivityService.getTreeActivity(treeId);
+    res.status(httpStatus.OK).json(treeActivity);
   } catch (e) {
     next(e);
   }

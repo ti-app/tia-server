@@ -33,3 +33,20 @@ export const addActivity = (treeIds: string[], activity: any, insert: boolean = 
 
   return db.collection(TREE_ACTIVITY_COLLECTION).bulkWrite(bulkOps);
 };
+
+export const getTreeActivity = (treeId: string) => {
+  const db = MongoClient.db;
+
+  return db
+    .collection('tree-activity')
+    .aggregate([
+      { $match: { treeId: new ObjectID(treeId) } },
+      { $unwind: '$activities' },
+      {
+        $sort: {
+          'activities.date': -1,
+        },
+      },
+    ])
+    .toArray();
+};
