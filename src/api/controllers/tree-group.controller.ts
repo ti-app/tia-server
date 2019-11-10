@@ -6,8 +6,9 @@ import UploadService from '@services/upload.service';
 import TreeActivityService from '@services/tree-activity.service';
 import constants from '@constants';
 import toArray from '@utils/to-array';
-import { toTreeHealthValue } from '@utils/common-utils';
-import { AuthRequest, CreateTreeGroupRequest } from '@appTypes/requests';
+import { toTreeHealthValue, keyExists } from '@utils/common-utils';
+import { AuthRequest, CreateTreeGroupRequest, ModActionRequest } from '@appTypes/requests';
+import APIError from '@utils/APIError';
 
 const { activityType, treeHealth } = constants;
 
@@ -134,17 +135,46 @@ export const getTreeGroups = async (req: AuthRequest, res: Response, next: NextF
   }
 };
 
-export const modActionOnTreeGroup = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const modActionOnTreeGroup = async (
+  req: ModActionRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const shouldApprove = req.body.approve;
+  const shouldDelete = req.body.deleteApprove;
+
   try {
-    if (req.body.approve) {
-      await TreeGroupService.updateModApprovalStatus(req.params.groupID, req.body.approve);
-      res.status(httpStatus.OK).json({ status: 'Tree Group approved by moderator' });
-    } else if (req.body.deleteApprove) {
-      await TreeGroupService.updateModDeleteStatus(req.params.groupID, req.body.deleteApprove);
-      res.status(httpStatus.OK).json({ status: 'Delete approved' });
-    } else if (!req.body.deleteApprove) {
-      await TreeGroupService.rejectTreeGroupDelete(req.params.groupID);
-      res.status(httpStatus.OK).json({ status: 'Delete rejected' });
+    // if both options or none are specified in request, throw error
+    if (keyExists('approve', req.body) && keyExists('deleteApprove', req.body)) {
+      throw new APIError({
+        message: 'Invalid Request. Only one mod action is possible at a time.',
+        status: httpStatus.BAD_REQUEST,
+      });
+    } else if (Object.keys(req.body).length === 0) {
+      throw new APIError({
+        message: 'Invalid Request. No action is specified.',
+        status: httpStatus.BAD_REQUEST,
+      });
+    }
+
+    if (keyExists('approve', req.body)) {
+      const modActionRes = await TreeGroupService.updateModApprovalStatus(
+        req.params.groupID,
+        shouldApprove
+      );
+
+      res
+        .status(httpStatus.OK)
+        .json({ status: `Tree Group ${shouldApprove ? 'approved' : 'rejected'} by moderator.` });
+    } else if (keyExists('deleteApprove', req.body)) {
+      if (shouldDelete) {
+        await TreeGroupService.updateModDeleteStatus(req.params.groupID, shouldDelete);
+      } else {
+        await TreeGroupService.rejectTreeGroupDelete(req.params.groupID);
+      }
+      res
+        .status(httpStatus.OK)
+        .json({ status: `Delete request ${shouldDelete ? 'approved' : 'rejected'}.` });
     }
   } catch (e) {
     next(e);
