@@ -50,3 +50,20 @@ export const getTreeActivity = (treeId: string) => {
     ])
     .toArray();
 };
+
+export const getUserActivity = (userId: string) => {
+  const db = MongoClient.db;
+
+  return db
+    .collection('tree-activity')
+    .aggregate([
+      { $match: { 'activities.user.id': userId } },
+      { $unwind: '$activities' },
+      {
+        $sort: {
+          'activities.date': -1,
+        },
+      },
+    ])
+    .toArray();
+};
