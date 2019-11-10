@@ -17,6 +17,10 @@ class TreeActivityService {
       },
     };
   }
+  getTreeActivity(treeId: string) {
+    console.log('TCL: TreeActivityService -> getTreeActivity', treeId);
+    return repository.getTreeActivity(treeId);
+  }
 }
 
 export default new TreeActivityService();
