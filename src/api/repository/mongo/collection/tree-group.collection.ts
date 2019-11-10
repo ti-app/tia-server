@@ -140,6 +140,7 @@ export const updateModApprovalStatus = (groupId: string, approve: boolean) => {
   }
   return db.collection(TREE_GROUP_COLLECTION).deleteOne({
     _id: new ObjectID(groupId),
+    moderatorApproved: false,
   });
 };
 

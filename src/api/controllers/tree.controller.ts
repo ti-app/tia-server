@@ -7,8 +7,10 @@ import TreeGroupService from '@services/tree-group.service';
 import UploadService from '@services/upload.service';
 
 import constants from '@constants';
-import { toTreeHealth, toTreeHealthValue } from '@utils/common-utils';
+import { toTreeHealth, toTreeHealthValue, keyExists } from '@utils/common-utils';
 import { AuthRequest, FileRequest } from '@appTypes/auth';
+import { ModActionRequest } from '@appTypes/requests';
+import APIError from '@utils/APIError';
 
 const { activityType, treeHealth } = constants;
 
@@ -100,14 +102,25 @@ export const updateTree = async (req: FileRequest, res: Response, next: NextFunc
   }
 };
 
-export const modActionOnTree = async (req: Request, res: Response, next: NextFunction) => {
+export const modActionOnTree = async (req: ModActionRequest, res: Response, next: NextFunction) => {
   try {
-    if (req.body.deleteApprove) {
-      await TreeService.updateModDeleteStatus(req.params.treeId, req.body.deleteApprove);
-      res.status(httpStatus.OK).json({ status: 'Delete approved' });
-    } else {
-      await TreeService.rejectTreeDelete(req.params.treeId);
-      res.status(httpStatus.OK).json({ status: 'Delete rejected' });
+    if (Object.keys(req.body).length === 0) {
+      throw new APIError({
+        message: 'Invalid Request. No action is specified.',
+        status: httpStatus.BAD_REQUEST,
+      });
+    }
+
+    if (keyExists('deleteApprove', req.body)) {
+      const shouldDelete = req.body.deleteApprove;
+
+      const deleteResult = shouldDelete
+        ? await TreeService.updateModDeleteStatus(req.params.treeId, shouldDelete)
+        : await TreeService.rejectTreeDelete(req.params.treeId);
+
+      res
+        .status(httpStatus.OK)
+        .json({ status: `Delete request ${shouldDelete ? 'approved' : 'rejected'}.` });
     }
   } catch (e) {
     next(e);
