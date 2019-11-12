@@ -48,8 +48,4 @@ export default class MongoRepository {
       MongoRepository.client.close();
     }
   }
-
-  public setDB(db: Db): void {
-    MongoRepository.db = db;
-  }
 }
