@@ -10,7 +10,7 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "baseUrl": "./src",
+    "baseUrl": "src",
     "paths": {
       "@appTypes/*": ["types/*"],
       "@constants": ["constants/index.ts"],

@@ -52,7 +52,7 @@ export class CustomModuleLoader {
   paths: any = this.cOptions.paths;
 
   constructor() {
-    const aliasBuildPath = `${process.cwd()}/${this.cOptions.outDir}`;
+    const aliasBuildPath = `${process.cwd()}/${this.cOptions.outDir}/${this.cOptions.baseUrl}`;
     const moduleAliasMap: any = {};
     for (const pathAlias of Object.keys(this.paths)) {
       const modulePath = this.paths[pathAlias][0];

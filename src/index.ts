@@ -32,8 +32,6 @@ app.listen(port, async () => {
     const dbClient = new MongoClient();
     const dbInstance = await dbClient.connect();
     logger.info(`Connected to mongodb...`);
-    // console.log('Started...');
-    logger.info(`Connected to mongodb 2...`);
   } catch (error) {}
 });
 

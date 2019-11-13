@@ -2,16 +2,16 @@
   "name": "tia-server",
   "version": "1.0.0",
   "description": "API server for TIA",
-  "main": "build/index.js",
+  "main": "build/src/index.js",
   "scripts": {
-    "start": "npm run build && cross-env NODE_ENV=production node build/index.js",
+    "start": "npm run build && cross-env NODE_ENV=production node build/src/index.js",
     "dev": "nodemon src/index.ts",
     "lint": "eslint **/*.ts --ignore-path .gitignore --ignore-pattern internals/scripts",
     "test": "cross-env NODE_ENV=test jest --watch",
     "prettier:fix": "prettier --write src/**/*.{ts,json,md}",
     "promote": "node src/api/utils/make-moderator.js",
     "build": "rm -rf build && cross-env NODE_ENV=production tsc",
-    "start:prod": "cross-env NODE_ENV=production node build/index.js"
+    "start:prod": "cross-env NODE_ENV=production node build/src/index.js"
   },
   "devDependencies": {
     "@types/compression": "^1.0.1",
