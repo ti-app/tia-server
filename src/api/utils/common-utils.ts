@@ -16,3 +16,5 @@ export const toTreeHealth = (healthValue: number): string => {
 export const toTreeHealthValue = (health: string): number => {
   return treeHealthValue[health];
 };
+
+export const keyExists = (key: any, obj: {}): boolean => key in obj;

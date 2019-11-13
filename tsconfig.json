@@ -9,6 +9,7 @@
     "noImplicitAny": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "baseUrl": "./src",
     "paths": {
       "@appTypes/*": ["types/*"],

@@ -111,8 +111,9 @@ export const updateSiteModApprovalStatus = async (siteId: string, approve: boole
     );
   } else {
     const db = MongoClient.db;
-    return db.collection(SITES_COLLECTION).remove({
+    return db.collection(SITES_COLLECTION).deleteOne({
       _id: new ObjectID(siteId),
+      moderatorApproved: false,
     });
   }
 };

@@ -5,12 +5,13 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
+      "cwd": "${workspaceRoot}",
       "runtimeArgs": ["-r", "ts-node/register"],
       "args": ["${workspaceFolder}/src/index.ts"],
       "sourceMaps": true,
       "protocol": "inspector",
+      "outputCapture": "std",
       "env": {
-        "NODE_ENV": "production",
         "DEBUG": "debug"
       }
     }

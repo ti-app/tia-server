@@ -67,6 +67,22 @@ export const fetchTreeGroups = async (
     },
   };
 
+  // this stage is to remove delete object from response for users other than mod and user who deleted the tree
+  // not working 😥
+  // const removeDeleteForOtherUsers = {
+  //   $project: {
+  //     delete: {
+  //       $cond: {
+  //         if: {
+  //           $and: [{ $ne: ['$delete', undefined] }, { $ne: [user.user_id, '$delete.deletedBy'] }],
+  //         },
+  //         then: '$$REMOVE',
+  //         else: '$delete',
+  //       },
+  //     },
+  //   },
+  // };
+
   const lookupQuery = {
     $lookup: {
       from: 'tree',
@@ -78,7 +94,7 @@ export const fetchTreeGroups = async (
               $and: [
                 { $eq: ['$groupId', '$$group_id'] },
                 // { $ne: ['$delete.deleted', true] },
-                { $ne: ['$delete.isModeratorApproved', true] },
+                { $ne: ['$delete.isModeratorApproved', true] }, // deleted but not approved
               ],
             },
           },
@@ -113,10 +129,21 @@ export const fetchTreeGroups = async (
 
   aggregationPipeline.push(lookupQuery, filterForTress);
 
-  return db
+  const treeGroups = await db
     .collection(TREE_GROUP_COLLECTION)
     .aggregate(aggregationPipeline)
     .toArray();
+
+  // TODO: try doing this in aggregation pipeline
+  if (user.role !== roles.MODERATOR) {
+    treeGroups.forEach((treeGroup) => {
+      if (treeGroup.delete && treeGroup.delete.deletedBy !== user.user_id) {
+        delete treeGroup.delete;
+      }
+    });
+  }
+
+  return treeGroups;
 };
 
 export const isTreeExistOnCoordinate = (lat: number, lng: number) => {
@@ -140,6 +167,7 @@ export const updateModApprovalStatus = (groupId: string, approve: boolean) => {
   }
   return db.collection(TREE_GROUP_COLLECTION).deleteOne({
     _id: new ObjectID(groupId),
+    moderatorApproved: false,
   });
 };
 
