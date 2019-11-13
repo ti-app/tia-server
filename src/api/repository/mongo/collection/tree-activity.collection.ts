@@ -78,14 +78,14 @@ export const getTreeActivity = async (treeId: string) => {
   return activities[0];
 };
 
-export const getUserActivity = (userId: string) => {
+export const getUserActivity = async (userId: string) => {
   const db = MongoClient.db;
 
-  return db
+  const res = await db
     .collection('tree-activity')
     .aggregate([
-      { $match: { 'activities.user.id': userId } },
       { $unwind: '$activities' },
+      { $match: { 'activities.user.id': userId } },
       {
         $sort: {
           'activities.date': -1,
@@ -93,12 +93,19 @@ export const getUserActivity = (userId: string) => {
       },
       {
         $group: {
-          _id: '$_id',
-          treeId: { $first: '$treeId' },
-          activities: { $push: '$activities' },
+          _id: '$activities.user.id',
+          // activities: { $push: '$$ROOT' },
+          activities: {
+            $push: {
+              treeId: '$treeId',
+              activity: '$activities',
+            },
+          },
         },
       },
-      { $project: { activities: '$activities', treeId: '$treeId' } },
+      // { $project: { activities: '$activities' } },
     ])
     .toArray();
+
+  return res[0];
 };
