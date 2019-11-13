@@ -34,7 +34,7 @@ export const getUsersWithRole = async () => {
   return users;
 };
 
-const listModUsers = async (nextPageToken?: string) => {
+export const listModUsers = async (nextPageToken?: string) => {
   // List batch of users, 1000 at a time.
   const customClaimUsers: Array<object> = [];
 
@@ -44,16 +44,16 @@ const listModUsers = async (nextPageToken?: string) => {
     .then((listUsersResult) => {
       listUsersResult.users.forEach(({ uid, displayName, email, customClaims, photoURL }) => {
         const userCustomClaims = customClaims as FirebaseCustomClaims;
-        if (userCustomClaims && userCustomClaims.role) {
-          customClaimUsers.push({
-            uid,
-            displayName,
-            email,
-            userCustomClaims,
-            photoURL,
-          });
-          console.log('user', email, userCustomClaims);
-        }
+        // if (userCustomClaims && userCustomClaims.role) {
+        customClaimUsers.push({
+          uid,
+          displayName,
+          email,
+          userCustomClaims,
+          photoURL,
+        });
+        console.log('user', email, displayName, photoURL, userCustomClaims);
+        //  }
       });
 
       if (listUsersResult.pageToken) {
@@ -71,4 +71,45 @@ const listModUsers = async (nextPageToken?: string) => {
 export const removeUserRole = async (email: string) => {
   const user = await admin.auth().getUserByEmail(email);
   return admin.auth().setCustomUserClaims(user.uid, {});
+};
+
+export const listAllUsers = async (nextPageToken?: string) => {
+  // List batch of users, 1000 at a time.
+  const usersList: Array<object> = [];
+
+  return admin
+    .auth()
+    .listUsers(1000, nextPageToken)
+    .then((listUsersResult) => {
+      listUsersResult.users.forEach(({ uid, displayName, email, customClaims, photoURL }) => {
+        const userCustomClaims = customClaims as FirebaseCustomClaims;
+        usersList.push({
+          uid,
+          displayName,
+          email,
+          userCustomClaims,
+          photoURL,
+        });
+        //  console.log('user', usersList);
+      });
+
+      if (listUsersResult.pageToken) {
+        // List next batch of users.
+        listModUsers(listUsersResult.pageToken);
+      }
+
+      return usersList;
+    })
+    .catch((error) => {
+      console.log('Error listing users:', error);
+    });
+};
+
+export const getUsersList = async () => {
+  const users = await listAllUsers();
+  return users;
+};
+
+export const getUserInfoFromUid = async (uid: string) => {
+  return admin.auth().getUser(uid);
 };

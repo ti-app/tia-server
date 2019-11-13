@@ -91,6 +91,14 @@ export const getUserActivity = (userId: string) => {
           'activities.date': -1,
         },
       },
+      {
+        $group: {
+          _id: '$_id',
+          treeId: { $first: '$treeId' },
+          activities: { $push: '$activities' },
+        },
+      },
+      { $project: { activities: '$activities', treeId: '$treeId' } },
     ])
     .toArray();
 };

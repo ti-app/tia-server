@@ -53,6 +53,7 @@
   "dependencies": {
     "@firebase/storage": "^0.2.9",
     "@google-cloud/storage": "^2.4.2",
+    "@types/lodash": "^4.14.146",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.0",
     "compression": "^1.7.4",
@@ -67,6 +68,7 @@
     "helmet": "^3.21.1",
     "http-status": "^1.4.0",
     "joi": "^14.3.1",
+    "lodash": "^4.17.15",
     "module-alias": "^2.2.2",
     "mongodb": "^3.3.2",
     "multer": "^1.4.2",
