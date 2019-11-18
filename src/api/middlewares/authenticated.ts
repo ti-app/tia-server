@@ -13,7 +13,7 @@ export default (req: AuthRequest, res: Response, next: NextFunction) => {
     logger.debug('[authenticated-middleware] required header x-id-token not found. request is unauthorized');
     return res.status(httpStatus.UNAUTHORIZED).json(responses.unAuthorized());
   }
-  return getFirebaseUidFromToken(idToken)
+  getFirebaseUidFromToken(idToken)
     .then((user) => {
       logger.debug('[authenticated-middleware] request is authenticated. user:', user);
       req.user = user;
