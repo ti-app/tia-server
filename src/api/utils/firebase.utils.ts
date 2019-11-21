@@ -2,6 +2,7 @@ import admin from 'firebase-admin';
 import logger from '@logger';
 import constants from '@constants';
 import { FirebaseCustomClaims } from '@appTypes/auth';
+import { NotificationMessage } from '@appTypes/common-types';
 
 admin.initializeApp({
   credential: admin.credential.cert(constants.firebase.firebaseServiceAccount),
@@ -112,4 +113,53 @@ export const getUsersList = async () => {
 
 export const getUserInfoFromUid = async (uid: string) => {
   return admin.auth().getUser(uid);
+};
+
+export const sendNotification = async (message: NotificationMessage, token: string) => {
+  const notificationMessage = {
+    data: message,
+    notification: {
+      title: message.title,
+      body: message.body,
+      image: message.image,
+    },
+    token: token,
+  };
+
+  try {
+    const notificationResponse = await admin.messaging().send(notificationMessage);
+    console.log('Successfully sent message:', notificationResponse);
+  } catch (error) {
+    console.log('Error sending message:', error);
+  }
+};
+
+export const sendMulticastNotification = async (message: NotificationMessage, tokens: string[]) => {
+  const notificationMessage = {
+    data: message,
+    notification: {
+      title: message.title,
+      body: message.body,
+      image: message.image,
+    },
+    tokens,
+  };
+
+  try {
+    const response = await admin.messaging().sendMulticast(notificationMessage);
+    console.log(
+      `Should send notification to: ${tokens.length}. Successfully sent to: ${response.successCount}`
+    );
+    if (response.failureCount > 0) {
+      const failedTokens: any[] = [];
+      response.responses.forEach((resp, index) => {
+        if (!resp.success) {
+          failedTokens.push(tokens[index]);
+        }
+      });
+      console.log('List of tokens that caused failures: ' + failedTokens);
+    }
+  } catch (error) {
+    console.log('Error sending message:', error);
+  }
 };

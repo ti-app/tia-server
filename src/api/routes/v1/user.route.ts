@@ -1,12 +1,9 @@
 import express from 'express';
-import validate from 'express-validation';
-// const validation = require('../../validations/tree.validation');
-import { userActivity } from '../../controllers/user.controller';
-import constants from '@constants';
-import { permit } from '../../middlewares/permission';
+import { userActivity, registerUserFCMToken } from '../../controllers/user.controller';
 
 const router = express.Router();
 
 router.route('/:userId/activity').get(userActivity);
+router.route('/notification/register').post(registerUserFCMToken);
 
 export default router;
