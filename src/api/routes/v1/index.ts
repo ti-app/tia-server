@@ -6,6 +6,7 @@ import treeGroupRoutes from './tree-group.route';
 import authorizationRoutes from './authorization.route';
 import userRoutes from './user.route';
 import topUsersRoutes from './top-users.route';
+import notificationService from '@services/notification.service';
 
 const router = express.Router();
 
@@ -15,5 +16,11 @@ router.use('/site', siteRoutes);
 router.use('/authorization', authorizationRoutes);
 router.use('/user', userRoutes);
 router.use('/top-users', topUsersRoutes);
+
+// Just to test notifications...will be removed
+router.get('/notify', async (req, res) => {
+  await notificationService.sendMulticastNotificationMessage();
+  res.status(200).json({ status: 'success' });
+});
 
 export default router;
