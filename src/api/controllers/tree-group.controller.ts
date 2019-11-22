@@ -18,8 +18,7 @@ export const createTreeGroup = async (
   next: NextFunction
 ) => {
   try {
-    // const { isCoordinateExists, health, plantType, waterCycle, trees, distribution } = req.body;
-    const { health, waterCycle, trees, distribution } = req.body;
+    const { health, waterCycle, trees, distribution, plantType } = req.body;
     // const isTreeExist = await TreeGroupService.isTreeExistOnCoordinate(lat, lng);
     // if (isTreeExist && !isCoordinateExists) {
     //   const isCoordinateExists = true;
@@ -52,6 +51,7 @@ export const createTreeGroup = async (
       photo: uploadedImage.url,
       photoName: uploadedImage.fileName,
       health,
+      plantType,
       healthCycle: Math.round(waterCycle),
       healthValue: toTreeHealthValue(health),
       createdAt: new Date().getTime(),
@@ -94,7 +94,6 @@ export const createTreeGroup = async (
     const treesToBeAddedToGroup = distributedTrees.map((aTree: any) => ({
       ...commonValues,
       groupId,
-      // plantType,
       location: {
         type: 'Point',
         coordinates: [parseFloat(aTree.lng), parseFloat(aTree.lat)],

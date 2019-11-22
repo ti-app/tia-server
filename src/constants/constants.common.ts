@@ -20,6 +20,11 @@ const TREE_HEALTH_VALUE = {
   [TREE_HEALTH.DEAD]: 1,
 };
 
+const TREE_DISTRIBUTION = {
+  SINGLE: 'single',
+  LINE: 'line',
+};
+
 const commonEnvVars: AppEnv = {
   env: process.env.NODE_ENV,
   port: process.env.PORT,
@@ -70,6 +75,7 @@ const commonEnvVars: AppEnv = {
     DELETE_SITE: 'SITE_DELETED',
     UPDATE_SITE: 'SITE_UPDATED',
   },
+  treeDistribution: TREE_DISTRIBUTION,
 };
 
 export default commonEnvVars;

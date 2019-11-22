@@ -1,10 +1,11 @@
-import { IsInt, IsString, IsPositive, IsIn, IsNotEmpty, IsArray } from 'class-validator';
+import { IsInt, IsString, IsPositive, IsIn, IsArray, IsNotEmpty, IsAlpha } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import constants from '@constants';
 import toArry from '@utils/to-array';
 import { MulterFile } from '@services/upload.service';
 
 const allowedHealth = toArry(constants.treeHealth);
+const allowedTreeDistributions = toArry(constants.treeDistribution);
 
 class TreePoint {
   lat: number;
@@ -17,6 +18,7 @@ export class CreateTreeGroup {
   health: string;
 
   @IsString()
+  @IsIn(allowedTreeDistributions)
   distribution: string;
 
   @Type(() => TreePoint)
@@ -29,4 +31,9 @@ export class CreateTreeGroup {
   @Type(() => Number)
   @Transform((value) => Number(value))
   waterCycle: number;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsAlpha()
+  plantType: string;
 }

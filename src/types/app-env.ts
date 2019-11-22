@@ -41,6 +41,11 @@ export interface TreeActivity {
   UPDATE_SITE: string;
 }
 
+export interface TreeDistribution {
+  SINGLE: string;
+  LINE: string;
+}
+
 interface Database {
   uri: string;
   database: string;
@@ -64,4 +69,5 @@ export interface AppEnv {
   treeHealth?: TreeHealth;
   treeHealthValue?: TreeHealthValue;
   activityType?: TreeActivity;
+  treeDistribution?: TreeDistribution;
 }
