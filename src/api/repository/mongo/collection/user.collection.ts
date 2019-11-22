@@ -22,6 +22,18 @@ export const saveFCMToken = (userId: string, fcmToken: string) => {
   );
 };
 
+export const removeUserFCMToken = (userId: string, fcmToken: string) => {
+  const db = MongoClient.db;
+  return db.collection(USER_COLLECTION).updateOne(
+    {
+      userId: userId,
+    },
+    {
+      $pull: { fcmTokens: { $in: [fcmToken] } },
+    }
+  );
+};
+
 export const getDeviceTokensOfUser = async (userId: string) => {
   const db = MongoClient.db;
   const result = await db.collection(USER_COLLECTION).findOne({

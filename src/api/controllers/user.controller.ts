@@ -23,3 +23,17 @@ export const registerUserFCMToken = async (req: AuthRequest, res: Response, next
     next(e);
   }
 };
+
+export const deregisterUserFCMToken = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const { fcmToken } = req.body;
+  try {
+    await UserService.removeUserFCMToken(req.user.uid, fcmToken);
+    res.status(httpStatus.OK).json({ status: 'success' });
+  } catch (e) {
+    next(e);
+  }
+};

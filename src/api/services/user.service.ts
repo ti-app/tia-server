@@ -11,6 +11,10 @@ class UserService {
   saveUserFCMToken(userId: string, fcmToken: string) {
     return userCollection.saveFCMToken(userId, fcmToken);
   }
+
+  removeUserFCMToken(userId: string, fcmToken: string) {
+    return userCollection.removeUserFCMToken(userId, fcmToken);
+  }
 }
 
 export default new UserService();
