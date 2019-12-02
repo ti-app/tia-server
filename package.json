@@ -6,7 +6,8 @@
   "scripts": {
     "start": "npm run build && cross-env NODE_ENV=production node build/src/index.js",
     "dev": "nodemon src/index.ts",
-    "lint": "eslint **/*.ts --ignore-path .gitignore --ignore-pattern internals/scripts",
+    "plop": "plop",
+    "lint": "eslint **/*.ts --ignore-path .gitignore plop-templates --ignore-pattern internals/scripts",
     "test": "cross-env NODE_ENV=test jest --watch",
     "prettier:fix": "prettier --write src/**/*.{ts,json,md}",
     "promote": "node src/api/utils/make-moderator.js",
@@ -45,6 +46,7 @@
     "jest": "^24.9.0",
     "lint-staged": "^9.4.2",
     "nodemon": "^1.19.3",
+    "plop": "^2.5.3",
     "prettier": "^1.18.2",
     "sinon": "^7.5.0",
     "supertest": "^4.0.2",
