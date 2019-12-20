@@ -36,6 +36,11 @@ module.exports = (plop) => {
         templateFile: 'plop-templates/service.template.ts',
       },
       {
+        type: 'add',
+        path: 'src/api/repository/mongo/{{name}}.collection.ts',
+        templateFile: 'plop-templates/repository.template.ts',
+      },
+      {
         type: 'append',
         path: 'src/api/routes/{{version}}/index.ts',
         pattern: /import express from 'express';/gi,
