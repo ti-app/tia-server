@@ -56,6 +56,8 @@
   "dependencies": {
     "@firebase/storage": "^0.2.9",
     "@google-cloud/storage": "^2.4.2",
+    "@turf/center": "^6.0.1",
+    "@turf/helpers": "^6.1.4",
     "@types/lodash": "^4.14.146",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.0",

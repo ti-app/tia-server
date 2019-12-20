@@ -9,6 +9,8 @@ import toArray from '@utils/to-array';
 import { toTreeHealthValue, keyExists } from '@utils/common-utils';
 import { AuthRequest, CreateTreeGroupRequest, ModActionRequest } from '@appTypes/requests';
 import APIError from '@utils/APIError';
+import { getCenterOfCoordinates } from '@utils/turf';
+import userService from '@services/user.service';
 
 const { activityType, treeHealth } = constants;
 
@@ -42,7 +44,8 @@ export const createTreeGroup = async (
     }
 
     const distributedTrees = trees; // [{},{},...]
-    const treeGroupLocation = distributedTrees[0]; // a location for tree group marker
+    // const treeGroupLocation = distributedTrees[0]; // a location for tree group marker
+    const treeGroupLocation = getCenterOfCoordinates(distributedTrees); // a location for tree group marker
 
     // const distributedTrees = JSON.parse(trees); // [{},{},...]
     // const treeGroupLocation = distributedTrees[0]; // a location for tree group marker
@@ -69,7 +72,7 @@ export const createTreeGroup = async (
       ...commonValues,
       location: {
         type: 'Point',
-        coordinates: [treeGroupLocation.lng, treeGroupLocation.lat],
+        coordinates: treeGroupLocation,
         // coordinates: [parseFloat(treeGroupLocation.lng), parseFloat(treeGroupLocation.lat)],
       },
       activeTrees: true,
@@ -120,7 +123,13 @@ export const createTreeGroup = async (
 export const getTreeGroups = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { user } = req;
-    const { lat, lng, radius, health } = req.query;
+
+    const { lat, lng, radius, health, user_location } = req.query;
+
+    if (user_location && user_location === 'true') {
+      await userService.saveUserLocation(user.uid, parseFloat(lat), parseFloat(lng));
+    }
+
     const allTreeGroups = await TreeGroupService.fetchTreeGroups(
       parseFloat(lat),
       parseFloat(lng),

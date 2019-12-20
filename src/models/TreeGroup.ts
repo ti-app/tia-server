@@ -1,4 +1,13 @@
-import { IsInt, IsString, IsPositive, IsIn, IsArray, IsNotEmpty, IsAlpha } from 'class-validator';
+import {
+  IsInt,
+  IsString,
+  IsPositive,
+  IsIn,
+  IsArray,
+  IsNotEmpty,
+  IsAlpha,
+  IsOptional,
+} from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import constants from '@constants';
 import toArry from '@utils/to-array';
@@ -32,6 +41,7 @@ export class CreateTreeGroup {
   @Transform((value) => Number(value))
   waterCycle: number;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @IsAlpha()
