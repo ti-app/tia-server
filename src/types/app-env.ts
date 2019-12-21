@@ -44,6 +44,7 @@ export interface TreeActivity {
 export interface TreeDistribution {
   SINGLE: string;
   LINE: string;
+  RANDOM: string;
 }
 
 interface Database {
