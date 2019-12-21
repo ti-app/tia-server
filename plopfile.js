@@ -37,7 +37,7 @@ module.exports = (plop) => {
       },
       {
         type: 'add',
-        path: 'src/api/repository/mongo/{{name}}.collection.ts',
+        path: 'src/api/repository/mongo/collection/{{name}}.collection.ts',
         templateFile: 'plop-templates/repository.template.ts',
       },
       {

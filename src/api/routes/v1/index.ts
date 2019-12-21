@@ -1,4 +1,5 @@
 import express from 'express';
+import panicRoutes from './panic.route';
 
 import treeRoutes from './tree.route';
 import siteRoutes from './site.route';
@@ -9,6 +10,7 @@ import topUsersRoutes from './top-users.route';
 import notificationService from '@services/notification.service';
 
 const router = express.Router();
+router.use('/panic', panicRoutes);
 
 router.use('/tree', treeRoutes);
 router.use('/tree_group', treeGroupRoutes);

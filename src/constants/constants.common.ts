@@ -38,6 +38,7 @@ const commonEnvVars: AppEnv = {
       treeGroup: 'tree-group',
       treeActivity: 'tree-activity',
       user: 'user',
+      panic: 'panic',
     },
   },
   firebase: {
