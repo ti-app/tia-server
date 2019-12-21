@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "allowJs": false,
+    "sourceMap": true,
+    "outDir": "build",
+    "strict": false,
+    "noImplicitAny": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "baseUrl": "src",
+    "paths": {
+      "@appTypes/*": ["types/*"],
+      "@constants": ["constants/index.ts"],
+      "@logger": ["config/logger.ts"],
+      "@utils/*": ["api/utils/*"],
+      "@services/*": ["api/services/*"],
+      "@repository/mongo/*": ["api/repository/mongo/collection/*"],
+      "@models/*": ["models/*"]
+    },
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["tests/**/*"]
+}

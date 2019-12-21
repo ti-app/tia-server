@@ -1,0 +1,13 @@
+{
+  "watch": ["src"],
+  "ext": "ts,json",
+  "restartable": "rs",
+  "ignore": [".git", "node_modules/**/*"],
+  "verbose": true,
+  "execMap": {
+    "ts": "ts-node -r tsconfig-paths/register src/index.ts"
+  },
+  "env": {
+    "NODE_ENV": "development"
+  }
+}
