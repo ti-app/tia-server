@@ -2,7 +2,7 @@ import { MongoClient, Db } from 'mongodb';
 
 import constants from '@constants';
 const { database } = constants;
-const { tree, treeGroup, site, user } = database.collections;
+const { tree, treeGroup, site, user, panic } = database.collections;
 
 // collectionName:indexType
 const dbIndexMap = {
@@ -10,6 +10,7 @@ const dbIndexMap = {
   [treeGroup]: { location: '2dsphere' },
   [site]: { location: '2dsphere' },
   [user]: { location: '2dsphere' },
+  [panic]: { location: '2dsphere' },
 };
 
 export default class MongoRepository {
