@@ -47,3 +47,49 @@ export const getAllDeviceTokens = () => {
   const db = MongoClient.db;
   return db.collection(USER_COLLECTION).distinct('fcmTokens', {});
 };
+
+export const saveUserLocation = (uid: string, lat: number, lng: number) => {
+  const db = MongoClient.db;
+  const userLocation = {
+    type: 'Point',
+    coordinates: [lng, lat],
+  };
+  return db.collection(USER_COLLECTION).updateOne(
+    {
+      userId: uid,
+    },
+    {
+      $set: {
+        location: userLocation,
+      },
+    }
+  );
+};
+
+// Get user document
+export const getUser = (uid: string) => {
+  const db = MongoClient.db;
+  return db.collection(USER_COLLECTION).findOne({
+    userId: uid,
+  });
+};
+
+// radius in meter
+export const getUsersInRadius = (lat: number, lng: number, radius: number) => {
+  const db = MongoClient.db;
+
+  const geoNearOperator = {
+    $geoNear: {
+      near: {
+        type: 'Point',
+        coordinates: [lng, lat],
+      },
+      distanceField: 'dist.calculated',
+      maxDistance: radius,
+      includeLocs: 'dist.location',
+      spherical: true,
+    },
+  };
+
+  return db.collection(USER_COLLECTION).aggregate([geoNearOperator]);
+};

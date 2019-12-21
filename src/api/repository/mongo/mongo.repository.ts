@@ -2,6 +2,15 @@ import { MongoClient, Db } from 'mongodb';
 
 import constants from '@constants';
 const { database } = constants;
+const { tree, treeGroup, site, user } = database.collections;
+
+// collectionName:indexType
+const dbIndexMap = {
+  [tree]: { location: '2dsphere' },
+  [treeGroup]: { location: '2dsphere' },
+  [site]: { location: '2dsphere' },
+  [user]: { location: '2dsphere' },
+};
 
 export default class MongoRepository {
   public static db: Db;
@@ -25,7 +34,7 @@ export default class MongoRepository {
         MongoClient.connect(
           database.uri,
           { useNewUrlParser: true, useUnifiedTopology: true },
-          (err, client) => {
+          async (err, client) => {
             if (err) {
               this.connectionInProgress = false; // unsetting the flag
               return reject(err);
@@ -33,6 +42,13 @@ export default class MongoRepository {
             const _db = client.db(database.database);
             MongoRepository.db = _db;
             MongoRepository.client = client;
+
+            // Create index
+            // If you call db.collection.createIndex() for an index that already exists,
+            // MongoDB does not recreate the index.
+            for (let [key, value] of Object.entries(dbIndexMap)) {
+              await _db.collection(key).createIndex(value);
+            }
 
             this.connectionInProgress = false; // unsetting the flag
             return resolve(_db);

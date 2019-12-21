@@ -23,6 +23,7 @@ const TREE_HEALTH_VALUE = {
 const TREE_DISTRIBUTION = {
   SINGLE: 'single',
   LINE: 'line',
+  RANDOM: 'random',
 };
 
 const commonEnvVars: AppEnv = {
