@@ -21,7 +21,7 @@ router.use('/top-users', topUsersRoutes);
 
 // Just to test notifications...will be removed
 router.get('/notify', async (req, res) => {
-  await notificationService.sendMulticastNotificationMessage();
+  await notificationService._sendMulticastNotificationMessage();
   res.status(200).json({ status: 'success' });
 });
 
