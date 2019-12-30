@@ -61,5 +61,11 @@ export const registerPanic = async (req: FileRequest, res: Response, next: NextF
     // moderatorApproved: SiteService.addedByModerator(req.user.role),
   };
   PanicService.create(panicToRegister);
+  //will change the raidus later
+  const fcmTokens = await PanicService.findUserFcmTokensForPanicNotification(
+    parseFloat(lat),
+    parseFloat(lng),
+    5000
+  );
   return res.status(httpStatus.OK).json({ message: 'panic registered', panicToRegister });
 };
