@@ -136,7 +136,9 @@ export const sendNotification = async (message: NotificationMessage, token: stri
 
 export const sendMulticastNotification = async (message: NotificationMessage, tokens: string[]) => {
   const notificationMessage = {
-    data: message,
+    data: {
+      payload: JSON.stringify(message),
+    },
     notification: {
       title: message.title,
       body: message.body,

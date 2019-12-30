@@ -4,6 +4,7 @@ import { FileRequest, AuthRequest } from '@appTypes/requests';
 import PanicService from '@services/panic.service';
 import { async } from 'rxjs/internal/scheduler/async';
 import UploadService from '../services/upload.service';
+import NotificationService from '@services/notification.service';
 
 export const getPanic = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -40,7 +41,7 @@ export const registerPanic = async (req: FileRequest, res: Response, next: NextF
   if (req.file && req.file !== undefined) {
     uploadedImage = await UploadService.uploadImageToStorage(req.file);
   }
-  const panicToRegister = {
+  const panicToRegister: any = {
     photo: uploadedImage.url,
     photoName: uploadedImage.fileName,
     location: {
@@ -60,12 +61,23 @@ export const registerPanic = async (req: FileRequest, res: Response, next: NextF
     },
     // moderatorApproved: SiteService.addedByModerator(req.user.role),
   };
-  PanicService.create(panicToRegister);
-  //will change the raidus later
-  const fcmTokens = await PanicService.findUserFcmTokensForPanicNotification(
-    parseFloat(lat),
-    parseFloat(lng),
-    5000
-  );
-  return res.status(httpStatus.OK).json({ message: 'panic registered', panicToRegister });
+  try {
+    await PanicService.create(panicToRegister);
+    //will change the radius later
+    const fcmTokens = await PanicService.findUserFcmTokensForPanicNotification(
+      parseFloat(lat),
+      parseFloat(lng),
+      5000
+    );
+    const allTokens = fcmTokens.reduce((acc, val) => {
+      acc.push(...val.fcmTokens);
+      return acc;
+    }, []);
+
+    console.log('TCL: registerPanic -> fcmTokens', allTokens);
+    await NotificationService.sendMulticastNotificationMessage(panicToRegister, allTokens);
+    return res.status(httpStatus.OK).json({ message: 'panic registered', panicToRegister });
+  } catch (error) {
+    next(error);
+  }
 };

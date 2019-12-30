@@ -48,7 +48,7 @@ export const findUserFcmTokensForPanicNotification = (lat: number, lng: number, 
       spherical: true,
     },
   };
-  const fcmTokens = { $project: { fcmTokens: '$fcmTokens' } };
+  const fcmTokens = { $project: { fcmTokens: '$fcmTokens', _id: 0 } };
   const aggregationPipeline: any[] = [geoNearOperator, fcmTokens];
 
   return db
