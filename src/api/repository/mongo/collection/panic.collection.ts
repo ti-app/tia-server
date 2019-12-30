@@ -1,3 +1,4 @@
+import { ObjectID } from 'mongodb';
 import constants from '@constants';
 import MongoClient from '../mongo.repository';
 const { database } = constants;
@@ -20,7 +21,14 @@ export const getPanic = (lat: number, lng: number, radius: number, user: any) =>
       spherical: true,
     },
   };
-  const aggregationPipeline: any[] = [geoNearOperator];
+  const notResolved = {
+    $match: {
+      $expr: {
+        $ne: ['$resolve.resolved', true],
+      },
+    },
+  };
+  const aggregationPipeline: any[] = [geoNearOperator, notResolved];
   return db
     .collection(PANIC_COLLECTION)
     .aggregate(aggregationPipeline)
@@ -30,4 +38,16 @@ export const getPanic = (lat: number, lng: number, radius: number, user: any) =>
 export const registerNewPanic = (panicObj: any) => {
   const db = MongoClient.db;
   return db.collection(PANIC_COLLECTION).insertOne(panicObj);
+};
+
+export const updatePanic = (panicId: string, updateBody: any) => {
+  const db = MongoClient.db;
+  return db.collection(PANIC_COLLECTION).updateOne(
+    {
+      _id: new ObjectID(panicId),
+    },
+    {
+      $set: updateBody,
+    }
+  );
 };

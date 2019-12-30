@@ -2,8 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import { FileRequest, AuthRequest } from '@appTypes/requests';
 import PanicService from '@services/panic.service';
+import constants from '@constants';
 import { async } from 'rxjs/internal/scheduler/async';
 import UploadService from '../services/upload.service';
+const { activityType } = constants;
 
 export const getPanic = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -62,4 +64,23 @@ export const registerPanic = async (req: FileRequest, res: Response, next: NextF
   };
   PanicService.create(panicToRegister);
   return res.status(httpStatus.OK).json({ message: 'panic registered', panicToRegister });
+};
+
+export const resolvePanic = async (req: FileRequest, res: Response, next: NextFunction) => {
+  const { panicID } = req.params;
+
+  try {
+    const resolvedPanic = await PanicService.updatePanic(panicID, {
+      resolve: {
+        resolved: true,
+        resolvedBy: req.user.user_id,
+      },
+    });
+
+    res.status(httpStatus.OK).json({
+      status: 'success',
+    });
+  } catch (e) {
+    next(e);
+  }
 };
