@@ -12,6 +12,8 @@ import APIError from '@utils/APIError';
 import { getCenterOfCoordinates } from '@utils/turf';
 import userService from '@services/user.service';
 
+import fs from 'fs';
+
 const { activityType, treeHealth } = constants;
 
 export const createTreeGroup = async (
