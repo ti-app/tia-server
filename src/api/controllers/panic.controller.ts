@@ -3,7 +3,6 @@ import httpStatus from 'http-status';
 import { FileRequest, AuthRequest } from '@appTypes/requests';
 import PanicService from '@services/panic.service';
 import constants from '@constants';
-import { async } from 'rxjs/internal/scheduler/async';
 import UploadService from '../services/upload.service';
 const { activityType } = constants;
 import NotificationService from '@services/notification.service';
