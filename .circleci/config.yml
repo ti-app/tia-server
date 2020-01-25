@@ -50,17 +50,18 @@ jobs:
           name: 'Decode private key'
           command: |
             export PRIVATE_KEY_DECODE=echo $PRIVATE_KEY | base64 -d
-            echo $PRIVATE_KEY_DECODE
-            echo ${PRIVATE_KEY_DECODE}
+            eval echo $PRIVATE_KEY_DECODE
+            eval echo ${PRIVATE_KEY_DECODE}
       - run:
           name: 'Echo private key'
           command: |
-            echo $PRIVATE_KEY_DECODE
-            echo ${PRIVATE_KEY_DECODE}
+            eval echo $PRIVATE_KEY_DECODE
+            eval echo ${PRIVATE_KEY_DECODE}
+
       - run:
           name: Docker build and push
           command: |
-
+            export PRIVATE_KEY_DECODE=echo $PRIVATE_KEY | base64 -d
             echo $PRIVATE_KEY_DECODE
             docker build \
               --build-arg COMMIT_REF=${CIRCLE_SHA1} \
