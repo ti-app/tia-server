@@ -60,9 +60,6 @@ jobs:
               --build-arg CLIENT_X509_CERT_URL=$CLIENT_X509_CERT_URL \
               --build-arg DATABASE_URL=$DATABASE_URL \
               --build-arg DB_NAME=$DB_NAME \
-              --build-arg DB_SITE_COLLECTION=$DB_SITE_COLLECTION \
-              --build-arg DB_TREE_COLLECTION=$DB_TREE_COLLECTION \
-              --build-arg DB_TREE_GROUP_COLLECTION=$DB_TREE_GROUP_COLLECTION \
               --build-arg DB_URI=$DB_URI \
               --build-arg NODE_ENV=$NODE_ENV \
               --build-arg PRIVATE_KEY=$PRIVATE_KEY \
