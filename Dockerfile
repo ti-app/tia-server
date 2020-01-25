@@ -35,7 +35,7 @@ RUN npm install
 
 COPY . /app/
 RUN touch .env
-RUN npm build
+RUN npm run build
 # ENV APP_BUILD_DATE=${BUILD_DATE} \
 #   AUTH_PROVIDER_X509_CERT_URL=$AUTH_PROVIDER_X509_CERT_URL \
 #   AUTH_URI=$AUTH_URI \
@@ -58,4 +58,4 @@ RUN npm build
 # RUN chmod +x init.sh
 # ENTRYPOINT ["./init.sh"]
 # cmd to start service
-CMD ["npm", "start:prod"]
+CMD ["npm","run","start:prod"]

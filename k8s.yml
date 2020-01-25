@@ -30,14 +30,10 @@ spec:
       containers:
         - name: ${PROJECT_NAME}
           image: eu.gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1}
-          volumeMounts:
-            - name: tia-secret-volume
-              mountPath: /etc/tia-secret-volume
+          envFrom:
+            - secretRef:
+                name: tia-secret
           ports:
             - name: http
               containerPort: 8000
               protocol: TCP
-      volumes:
-        - name: tia-secret-volume
-          secret:
-            secretName: tia-secret
