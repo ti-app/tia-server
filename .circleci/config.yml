@@ -62,7 +62,6 @@ jobs:
               --build-arg DB_NAME=$DB_NAME \
               --build-arg DB_URI=$DB_URI \
               --build-arg NODE_ENV=$NODE_ENV \
-              --build-arg PRIVATE_KEY=$PRIVATE_KEY \
               --build-arg PRIVATE_KEY_ID=$PRIVATE_KEY_ID \
               --build-arg PROJECT_ID=$PROJECT_ID \
               --build-arg SESSION_SECRET=$SESSION_SECRET \
