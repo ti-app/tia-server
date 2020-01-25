@@ -26,10 +26,10 @@ jobs:
     docker:
       - image: google/cloud-sdk
     environment:
-      - PROJECT_NAME: "tia-server"
-      - GOOGLE_PROJECT_ID: "project-tia-233318"
-      - GOOGLE_COMPUTE_ZONE: "asia-southeast1-a"
-      - GOOGLE_CLUSTER_NAME: "tia-prod-cluster-1"
+      - PROJECT_NAME: 'tia-server'
+      - GOOGLE_PROJECT_ID: 'project-tia-233318'
+      - GOOGLE_COMPUTE_ZONE: 'asia-southeast1-a'
+      - GOOGLE_CLUSTER_NAME: 'tia-prod-cluster-1'
     steps:
       - checkout
       - run:
@@ -43,12 +43,13 @@ jobs:
             gcloud --quiet container clusters get-credentials ${GOOGLE_CLUSTER_NAME}
       - setup_remote_docker
       - run:
-          name: "Setup custom environment variables"
+          name: 'Setup custom environment variables'
           command: |
             echo $DB_URI
       - run:
           name: Docker build and push
           command: |
+            export PRIVATE_KEY_DECODE=echo $PRIVATE_KEY | base64 -d
             docker build \
               --build-arg COMMIT_REF=${CIRCLE_SHA1} \
               --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
@@ -62,6 +63,7 @@ jobs:
               --build-arg DB_NAME=$DB_NAME \
               --build-arg DB_URI=$DB_URI \
               --build-arg NODE_ENV=$NODE_ENV \
+              --build-arg PRIVATE_KEY=$PRIVATE_KEY_DECODE \
               --build-arg PRIVATE_KEY_ID=$PRIVATE_KEY_ID \
               --build-arg PROJECT_ID=$PROJECT_ID \
               --build-arg SESSION_SECRET=$SESSION_SECRET \
