@@ -1,5 +1,6 @@
 import { Storage } from '@google-cloud/storage';
 import constants from '@constants';
+import stream from 'stream';
 
 export interface MulterFile {
   key: string;
@@ -7,6 +8,7 @@ export interface MulterFile {
   mimetype: string;
   originalname: string;
   size: number;
+  buffer: Buffer;
 }
 
 class UploadService {
@@ -29,7 +31,7 @@ class UploadService {
         reject('No image file');
       }
 
-      const newFileName = `${file.originalname}-${Date.now()}`;
+      const newFileName = `${Date.now()}-${file.originalname}`;
 
       const fileUpload = bucket.file(newFileName);
 
@@ -38,6 +40,9 @@ class UploadService {
           contentType: file.mimetype,
         },
       });
+
+      const dataStream = new stream.PassThrough();
+      blobStream.pipe(dataStream);
 
       blobStream.on('error', (error) => {
         reject('Something is wrong! Unable to upload at the moment.');
@@ -49,8 +54,7 @@ class UploadService {
         resolve({ url, fileName: fileUpload.name });
       });
 
-      // blobStream.end(file.buffer);
-      blobStream.end();
+      blobStream.end(file.buffer);
     });
   }
 

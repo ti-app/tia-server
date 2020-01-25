@@ -16,7 +16,7 @@ class NotificationService {
     );
   }
 
-  async sendMulticastNotificationMessage() {
+  async _sendMulticastNotificationMessage() {
     const tokens = await getAllDeviceTokens();
     sendMulticastNotification(
       {
@@ -24,6 +24,30 @@ class NotificationService {
         body: 'This message is sent from TIA backend',
         version: '1',
         app: 'TIA',
+      },
+      tokens
+    );
+  }
+
+  async sendMulticastNotificationMessage(data: any, tokens: string[]) {
+    // const tokens = await getAllDeviceTokens();
+    sendMulticastNotification(
+      {
+        title: 'A message from TIA',
+        body: 'This message is sent from TIA backend',
+        ...data,
+      },
+      tokens
+    );
+  }
+
+  async sendPanicMulticastNotificationMessage(data: any, tokens: string[]) {
+    sendMulticastNotification(
+      {
+        title: 'PANIC',
+        body: 'A Panic has been reported nearby. Click here to see details.',
+        type: 'panic',
+        ...data,
       },
       tokens
     );
