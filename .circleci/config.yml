@@ -50,6 +50,7 @@ jobs:
           name: Docker build and push
           command: |
             export PRIVATE_KEY_DECODE=echo $PRIVATE_KEY | base64 -d
+            echo $PRIVATE_KEY_DECODE
             docker build \
               --build-arg COMMIT_REF=${CIRCLE_SHA1} \
               --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
