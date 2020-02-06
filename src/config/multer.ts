@@ -18,12 +18,12 @@ const multer = Multer({
     if (mimetype && extname) {
       return cb(null, true);
     }
+
     return cb(
       new APIError({
         message: `Image upload only supports the following filetypes - ${allowedTypesRegex}`,
         status: httpStatus.BAD_REQUEST,
-      }),
-      false
+      })
     );
   },
 });
