@@ -26,10 +26,11 @@ jobs:
     docker:
       - image: google/cloud-sdk
     environment:
-      - PROJECT_NAME: "tia-server"
-      - GOOGLE_PROJECT_ID: "project-tia-233318"
-      - GOOGLE_COMPUTE_ZONE: "asia-southeast1-a"
-      - GOOGLE_CLUSTER_NAME: "tia-prod-cluster-1"
+      - PROJECT_NAME: 'tia-server'
+      - GOOGLE_PROJECT_ID: 'project-tia-233318'
+      - GOOGLE_COMPUTE_ZONE: 'asia-southeast1-a'
+#       - GOOGLE_CLUSTER_NAME: 'tia-prod-cluster-1'
+      - GOOGLE_CLUSTER_NAME: 'standard-cluster-1'
     steps:
       - checkout
       - run:
@@ -43,41 +44,16 @@ jobs:
             gcloud --quiet container clusters get-credentials ${GOOGLE_CLUSTER_NAME}
       - setup_remote_docker
       - run:
-          name: "Setup custom environment variables"
-          command: |
-            echo $DB_URI
-      - run:
           name: Docker build and push
           command: |
-            docker build \
-              --build-arg COMMIT_REF=${CIRCLE_SHA1} \
-              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
-              --build-arg AUTH_PROVIDER_X509_CERT_URL=$AUTH_PROVIDER_X509_CERT_URL \
-              --build-arg AUTH_URI=$AUTH_URI \
-              --build-arg BUCKET_ID=$BUCKET_ID \
-              --build-arg CLIENT_EMAIL=$CLIENT_EMAIL \
-              --build-arg CLIENT_ID=$CLIENT_ID \
-              --build-arg CLIENT_X509_CERT_URL=$CLIENT_X509_CERT_URL \
-              --build-arg DATABASE_URL=$DATABASE_URL \
-              --build-arg DB_NAME=$DB_NAME \
-              --build-arg DB_SITE_COLLECTION=$DB_SITE_COLLECTION \
-              --build-arg DB_TREE_COLLECTION=$DB_TREE_COLLECTION \
-              --build-arg DB_TREE_GROUP_COLLECTION=$DB_TREE_GROUP_COLLECTION \
-              --build-arg DB_URI=$DB_URI \
-              --build-arg NODE_ENV=$NODE_ENV \
-              --build-arg PRIVATE_KEY=$PRIVATE_KEY \
-              --build-arg PRIVATE_KEY_ID=$PRIVATE_KEY_ID \
-              --build-arg PROJECT_ID=$PROJECT_ID \
-              --build-arg SESSION_SECRET=$SESSION_SECRET \
-              --build-arg TOKEN_URI=$TOKEN_URI \
-              --build-arg TYPE=$TYPE \
-              -t ${PROJECT_NAME} .
+            docker build -t ${PROJECT_NAME} .
             docker tag ${PROJECT_NAME} eu.gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1}
             gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://eu.gcr.io
             docker push eu.gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1}
       - run:
           name: Deploy to Kubernetes
           command: |
+            envsubst < ${HOME}/project/tia-secret.yml | kubectl apply -f -
             envsubst < ${HOME}/project/k8s.yml > ${HOME}/patched_k8s.yml
             kubectl apply -f ${HOME}/patched_k8s.yml
             kubectl rollout status deployment/${PROJECT_NAME}
