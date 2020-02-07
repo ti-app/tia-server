@@ -51,6 +51,10 @@ app.use(session());
 /**
  * GET v1/status
  */
+// TODO: Testing '/' route to fix routing issue in GCP
+app.get('/', (req: Request, res: Response) => {
+  return res.status(200).send('OK');
+});
 app.get('/status', (req: Request, res: Response) => {
   return res.status(200).send('OK');
 });
