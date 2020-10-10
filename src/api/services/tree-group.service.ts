@@ -38,6 +38,10 @@ class TreeGroupService {
     return repository.updateTreeGroup(groupId, updateBody);
   }
 
+  updateMultipleTreeGroup(groupIds: any, updateBody: any) {
+    return repository.updateMultipleTreeGroup(groupIds, updateBody);
+  }
+
   deleteTreeGroup(groupId: any) {
     const user = Context.get('user');
     const isRequestModApproved = user.role === roles.MODERATOR;
@@ -61,6 +65,17 @@ class TreeGroupService {
     };
 
     return repository.waterTreesOfGroup(groupId, treeHealthObj);
+  }
+
+  waterTreesOfMultipleGroups(groupIds: [{ id: string }]) {
+    const treeHealthObj = {
+      health: treeHealth.HEALTHY,
+      healthValue: toTreeHealthValue(treeHealth.HEALTHY),
+      lastActivityDate: new Date().getTime(),
+      lastActivityType: activityType.WATER_TREE,
+    };
+
+    return repository.waterTreesOfMultipleGroups(groupIds, treeHealthObj);
   }
 }
 

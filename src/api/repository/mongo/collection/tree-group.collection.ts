@@ -1,4 +1,4 @@
-import { ObjectID } from 'mongodb';
+import { ObjectID, UpdateWriteOpResult } from 'mongodb';
 import constants from '@constants';
 import MongoClient from '../mongo.repository';
 const { database, roles } = constants;
@@ -143,6 +143,7 @@ export const fetchTreeGroups = async (
     });
   }
 
+  console.log(treeGroups);
   return treeGroups;
 };
 
@@ -223,6 +224,24 @@ export const updateTreeGroup = (groupId: string, updateBody: any) => {
   );
 };
 
+export const updateMultipleTreeGroup = (
+  groupIds: [any],
+  updateBody: any
+): Promise<UpdateWriteOpResult> => {
+  const db = MongoClient.db;
+
+  return db.collection(TREE_GROUP_COLLECTION).updateMany(
+    {
+      _id: {
+        $in: groupIds.map(({ id }) => new ObjectID(id)),
+      },
+    },
+    {
+      $set: updateBody,
+    }
+  );
+};
+
 export const deleteTreeGroup = (groupId: string, userId: string, isModeratorApproved: boolean) => {
   const db = MongoClient.db;
 
@@ -295,6 +314,21 @@ export const waterTreesOfGroup = (groupId: string, updateBody: any) => {
   return db.collection('tree').updateMany(
     {
       groupId: new ObjectID(groupId),
+    },
+    {
+      $set: updateBody,
+    }
+  );
+};
+
+export const waterTreesOfMultipleGroups = (groupIds: [{ id: string }], updateBody: any) => {
+  const db = MongoClient.db;
+
+  return db.collection('tree').updateMany(
+    {
+      groupId: {
+        $in: groupIds.map(({ id }) => new ObjectID(id)),
+      },
     },
     {
       $set: updateBody,

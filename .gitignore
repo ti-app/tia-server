@@ -78,3 +78,6 @@ sessions
 .vscode/
 
 build
+
+# Log files
+*.log
