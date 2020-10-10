@@ -67,6 +67,10 @@ class TreeGroupService {
     return repository.waterTreesOfGroup(groupId, treeHealthObj);
   }
 
+  fetchTreeGroupClusters(bbox: string) {
+    return repository.fetchTreeGroupsV2(bbox);
+  }
+
   waterTreesOfMultipleGroups(groupIds: [{ id: string }]) {
     const treeHealthObj = {
       health: treeHealth.HEALTHY,

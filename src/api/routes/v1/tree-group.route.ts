@@ -5,6 +5,7 @@ import {
   deleteTreeGroup,
   waterTreeGroup,
   modActionOnTreeGroup,
+  getTreeGroupClusters,
   waterMultipleTreeGroups,
 } from '../../controllers/tree-group.controller';
 import { permit } from '../../middlewares/permission';
@@ -27,6 +28,7 @@ router
     createTreeGroup
   );
 router.route('/').get(getTreeGroups);
+router.route('/cluster').get(getTreeGroupClusters);
 router.route('/water').patch(waterMultipleTreeGroups);
 
 router

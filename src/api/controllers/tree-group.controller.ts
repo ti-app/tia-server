@@ -216,6 +216,15 @@ export const waterTreeGroup = async (req: AuthRequest, res: Response, next: Next
   }
 };
 
+export const getTreeGroupClusters = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { bbox } = req.query;
+    const allTreeGroupClusters = await TreeGroupService.fetchTreeGroupClusters(bbox);
+    res.status(httpStatus.OK).json(allTreeGroupClusters);
+  } catch (e) {
+    next(e);
+  }
+};
 export const waterMultipleTreeGroups = async (
   req: AuthRequest,
   res: Response,
