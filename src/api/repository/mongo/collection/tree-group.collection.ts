@@ -343,7 +343,7 @@ export const fetchTreeGroupsV2 = async (bbox: string) => {
   console.log('geohashPrefixLength', geohashPrefixLength);
   console.log(blHash.substring(0, geohashPrefixLength));
 
-  const incFactor = 3; // grouping factor, should depend on zoom/grid size
+  const incFactor = 4; // grouping factor, should depend on zoom/grid size
 
   const aggregation = {
     query: [
