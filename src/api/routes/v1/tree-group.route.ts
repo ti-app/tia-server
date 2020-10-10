@@ -6,6 +6,7 @@ import {
   waterTreeGroup,
   modActionOnTreeGroup,
   getTreeGroupClusters,
+  waterMultipleTreeGroups,
 } from '../../controllers/tree-group.controller';
 import { permit } from '../../middlewares/permission';
 import multer from '../../../config/multer';
@@ -28,6 +29,7 @@ router
   );
 router.route('/').get(getTreeGroups);
 router.route('/cluster').get(getTreeGroupClusters);
+router.route('/water').patch(waterMultipleTreeGroups);
 
 router
   .route('/:groupID/mod-action')
@@ -36,7 +38,6 @@ router
     requestValidator(RequestField.BODY, ModAction, true, { skipMissingProperties: true }),
     modActionOnTreeGroup
   );
-
 router.route('/:groupID').delete(deleteTreeGroup);
 router.route('/:groupID/water').get(waterTreeGroup);
 

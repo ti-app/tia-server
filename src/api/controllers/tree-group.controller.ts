@@ -225,3 +225,23 @@ export const getTreeGroupClusters = async (req: AuthRequest, res: Response, next
     next(e);
   }
 };
+export const waterMultipleTreeGroups = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const { treeGroups } = req.body;
+
+  try {
+    await TreeGroupService.updateMultipleTreeGroup(treeGroups, {
+      health: treeHealth.HEALTHY,
+      healthValue: toTreeHealthValue(treeHealth.HEALTHY),
+    });
+
+    await TreeGroupService.waterTreesOfMultipleGroups(treeGroups);
+
+    res.status(httpStatus.OK).json({ status: 'success', updatedTreeGroups: treeGroups });
+  } catch (e) {
+    next(e);
+  }
+};

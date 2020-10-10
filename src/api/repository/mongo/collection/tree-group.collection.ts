@@ -1,4 +1,4 @@
-import { ObjectID } from 'mongodb';
+import { ObjectID, UpdateWriteOpResult } from 'mongodb';
 import * as _ from 'lodash';
 import geohash from 'ngeohash';
 import constants from '@constants';
@@ -145,6 +145,7 @@ export const fetchTreeGroups = async (
     });
   }
 
+  console.log(treeGroups);
   return treeGroups;
 };
 
@@ -218,6 +219,24 @@ export const updateTreeGroup = (groupId: string, updateBody: any) => {
   return db.collection(TREE_GROUP_COLLECTION).updateOne(
     {
       _id: new ObjectID(groupId),
+    },
+    {
+      $set: updateBody,
+    }
+  );
+};
+
+export const updateMultipleTreeGroup = (
+  groupIds: [any],
+  updateBody: any
+): Promise<UpdateWriteOpResult> => {
+  const db = MongoClient.db;
+
+  return db.collection(TREE_GROUP_COLLECTION).updateMany(
+    {
+      _id: {
+        $in: groupIds.map(({ id }) => new ObjectID(id)),
+      },
     },
     {
       $set: updateBody,
@@ -386,4 +405,19 @@ export const fetchTreeGroupsV2 = async (bbox: string) => {
     .aggregate(aggregation.query)
     .toArray();
   return treeGroups;
+};
+
+export const waterTreesOfMultipleGroups = (groupIds: [{ id: string }], updateBody: any) => {
+  const db = MongoClient.db;
+
+  return db.collection('tree').updateMany(
+    {
+      groupId: {
+        $in: groupIds.map(({ id }) => new ObjectID(id)),
+      },
+    },
+    {
+      $set: updateBody,
+    }
+  );
 };

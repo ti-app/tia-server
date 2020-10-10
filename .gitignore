@@ -80,3 +80,6 @@ sessions
 build
 mongo-scratchpad.js
 dump/
+
+# Log files
+*.log
