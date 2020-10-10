@@ -78,3 +78,5 @@ sessions
 .vscode/
 
 build
+mongo-scratchpad.js
+dump/

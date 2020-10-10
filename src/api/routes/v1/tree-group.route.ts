@@ -5,6 +5,7 @@ import {
   deleteTreeGroup,
   waterTreeGroup,
   modActionOnTreeGroup,
+  getTreeGroupClusters,
 } from '../../controllers/tree-group.controller';
 import { permit } from '../../middlewares/permission';
 import multer from '../../../config/multer';
@@ -26,6 +27,7 @@ router
     createTreeGroup
   );
 router.route('/').get(getTreeGroups);
+router.route('/cluster').get(getTreeGroupClusters);
 
 router
   .route('/:groupID/mod-action')
