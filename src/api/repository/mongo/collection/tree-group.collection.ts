@@ -1,4 +1,6 @@
-import { ObjectID } from 'mongodb';
+import { ObjectID, UpdateWriteOpResult } from 'mongodb';
+import * as _ from 'lodash';
+import geohash from 'ngeohash';
 import constants from '@constants';
 import MongoClient from '../mongo.repository';
 const { database, roles } = constants;
@@ -143,6 +145,7 @@ export const fetchTreeGroups = async (
     });
   }
 
+  console.log(treeGroups);
   return treeGroups;
 };
 
@@ -223,6 +226,24 @@ export const updateTreeGroup = (groupId: string, updateBody: any) => {
   );
 };
 
+export const updateMultipleTreeGroup = (
+  groupIds: [any],
+  updateBody: any
+): Promise<UpdateWriteOpResult> => {
+  const db = MongoClient.db;
+
+  return db.collection(TREE_GROUP_COLLECTION).updateMany(
+    {
+      _id: {
+        $in: groupIds.map(({ id }) => new ObjectID(id)),
+      },
+    },
+    {
+      $set: updateBody,
+    }
+  );
+};
+
 export const deleteTreeGroup = (groupId: string, userId: string, isModeratorApproved: boolean) => {
   const db = MongoClient.db;
 
@@ -295,6 +316,105 @@ export const waterTreesOfGroup = (groupId: string, updateBody: any) => {
   return db.collection('tree').updateMany(
     {
       groupId: new ObjectID(groupId),
+    },
+    {
+      $set: updateBody,
+    }
+  );
+};
+
+export const fetchTreeGroupsV2 = async (bbox: string) => {
+  // const bboxString = '73.625379,18.388787,74.027583,18.710622';
+  const coordinates = _.map(bbox.split(','), parseFloat);
+  const bboxCorners = {
+    bottomLeft: [coordinates[0], coordinates[1]],
+    upperRight: [coordinates[2], coordinates[3]],
+  };
+  const blHash = geohash.encode(bboxCorners.bottomLeft[1], bboxCorners.bottomLeft[0]);
+  const urHash = geohash.encode(bboxCorners.upperRight[1], bboxCorners.upperRight[0]);
+
+  let geohashPrefixLength;
+  for (geohashPrefixLength = 0; geohashPrefixLength < blHash.length; geohashPrefixLength++) {
+    if (blHash[geohashPrefixLength] !== urHash[geohashPrefixLength]) break;
+  }
+
+  console.log('blHash', blHash);
+  console.log('urHash', urHash);
+  console.log('geohashPrefixLength', geohashPrefixLength);
+  console.log(blHash.substring(0, geohashPrefixLength));
+
+  const incFactor = 3; // grouping factor, should depend on zoom/grid size
+
+  const aggregation = {
+    query: [
+      {
+        $match: {
+          location: {
+            $geoWithin: {
+              $box: [bboxCorners.bottomLeft, bboxCorners.upperRight],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          geo: {
+            $substr: ['$geohash', 0, geohashPrefixLength + incFactor],
+          },
+          location: 1,
+          treeGroup: '$$ROOT',
+        },
+      },
+      {
+        $group: {
+          _id: '$geo',
+          count: {
+            $sum: 1,
+          },
+          lat: {
+            $avg: {
+              $arrayElemAt: ['$location.coordinates', 1],
+            },
+          },
+          lng: {
+            $avg: {
+              $arrayElemAt: ['$location.coordinates', 0],
+            },
+          },
+          data: { $first: '$$ROOT' },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          count: 1,
+          lat: 1,
+          lng: 1,
+          data: {
+            $cond: { if: { $eq: ['$count', 1] }, then: '$data.treeGroup', else: '$$REMOVE' },
+          },
+        },
+      },
+    ],
+  };
+
+  const db = MongoClient.db;
+  const treeGroups = await db
+    .collection('tree-group')
+    .aggregate(aggregation.query)
+    .toArray();
+  return treeGroups;
+};
+
+export const waterTreesOfMultipleGroups = (groupIds: [{ id: string }], updateBody: any) => {
+  const db = MongoClient.db;
+
+  return db.collection('tree').updateMany(
+    {
+      groupId: {
+        $in: groupIds.map(({ id }) => new ObjectID(id)),
+      },
     },
     {
       $set: updateBody,

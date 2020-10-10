@@ -37,3 +37,18 @@ spec:
             - name: http
               containerPort: 8000
               protocol: TCP
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: tia-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ${PROJECT_NAME}
+          servicePort: 80

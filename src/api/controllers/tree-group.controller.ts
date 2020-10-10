@@ -215,3 +215,33 @@ export const waterTreeGroup = async (req: AuthRequest, res: Response, next: Next
     next(e);
   }
 };
+
+export const getTreeGroupClusters = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { bbox } = req.query;
+    const allTreeGroupClusters = await TreeGroupService.fetchTreeGroupClusters(bbox);
+    res.status(httpStatus.OK).json(allTreeGroupClusters);
+  } catch (e) {
+    next(e);
+  }
+};
+export const waterMultipleTreeGroups = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const { treeGroups } = req.body;
+
+  try {
+    await TreeGroupService.updateMultipleTreeGroup(treeGroups, {
+      health: treeHealth.HEALTHY,
+      healthValue: toTreeHealthValue(treeHealth.HEALTHY),
+    });
+
+    await TreeGroupService.waterTreesOfMultipleGroups(treeGroups);
+
+    res.status(httpStatus.OK).json({ status: 'success', updatedTreeGroups: treeGroups });
+  } catch (e) {
+    next(e);
+  }
+};
