@@ -67,8 +67,8 @@ class TreeGroupService {
     return repository.waterTreesOfGroup(groupId, treeHealthObj);
   }
 
-  fetchTreeGroupClusters(bbox: string) {
-    return repository.fetchTreeGroupsV2(bbox);
+  fetchTreeGroupClusters(bbox: string, zoom: number, user: any) {
+    return repository.fetchTreeGroupsV2(bbox, zoom, user);
   }
 
   waterTreesOfMultipleGroups(groupIds: [{ id: string }]) {
