@@ -25,6 +25,10 @@ class TreeService {
   rejectTreeDelete(treeId: string) {
     return repository.rejectTreeDelete(treeId);
   }
+
+  getTreeDetail(treeId: string) {
+    return repository.singleTreeDetail(treeId);
+  }
 }
 
 export default new TreeService();

@@ -136,3 +136,13 @@ export const treeActivity = async (req: Request, res: Response, next: NextFuncti
     next(e);
   }
 };
+
+export const getSingleTreeDetail = async (req: Request, res: Response, next: NextFunction) => {
+  const { treeId } = req.params;
+  try {
+    const treeDetail = await TreeService.getTreeDetail(treeId);
+    res.status(httpStatus.OK).json(treeDetail);
+  } catch (e) {
+    next(e);
+  }
+};
