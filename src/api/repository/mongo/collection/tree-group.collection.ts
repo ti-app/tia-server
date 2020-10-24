@@ -145,7 +145,7 @@ export const fetchTreeGroups = async (
     });
   }
 
-  console.log(treeGroups);
+  // console.log(treeGroups);
   return treeGroups;
 };
 
@@ -323,8 +323,9 @@ export const waterTreesOfGroup = (groupId: string, updateBody: any) => {
   );
 };
 
-export const fetchTreeGroupsV2 = async (bbox: string) => {
+export const fetchTreeGroupsV2 = async (bbox: string, zoom: number, user: any) => {
   // const bboxString = '73.625379,18.388787,74.027583,18.710622';
+  const zoomPrefixLengthMap = [1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 9];
   const coordinates = _.map(bbox.split(','), parseFloat);
   const bboxCorners = {
     bottomLeft: [coordinates[0], coordinates[1]],
@@ -338,71 +339,101 @@ export const fetchTreeGroupsV2 = async (bbox: string) => {
     if (blHash[geohashPrefixLength] !== urHash[geohashPrefixLength]) break;
   }
 
+  console.log('zoom', zoom);
   console.log('blHash', blHash);
   console.log('urHash', urHash);
   console.log('geohashPrefixLength', geohashPrefixLength);
   console.log(blHash.substring(0, geohashPrefixLength));
 
-  const incFactor = 4; // grouping factor, should depend on zoom/grid size
+  // const incFactor = 3; // grouping factor, should depend on zoom/grid size
+  // const groupingFactor = geohashPrefixLength + incFactor;
+  const groupingFactor = zoomPrefixLengthMap[zoom - 1];
 
-  const aggregation = {
-    query: [
-      {
-        $match: {
-          location: {
-            $geoWithin: {
-              $box: [bboxCorners.bottomLeft, bboxCorners.upperRight],
-            },
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          geo: {
-            $substr: ['$geohash', 0, geohashPrefixLength + incFactor],
-          },
-          location: 1,
-          treeGroup: '$$ROOT',
-        },
-      },
-      {
-        $group: {
-          _id: '$geo',
-          count: {
-            $sum: 1,
-          },
-          lat: {
-            $avg: {
-              $arrayElemAt: ['$location.coordinates', 1],
-            },
-          },
-          lng: {
-            $avg: {
-              $arrayElemAt: ['$location.coordinates', 0],
-            },
-          },
-          data: { $first: '$$ROOT' },
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          count: 1,
-          lat: 1,
-          lng: 1,
-          data: {
-            $cond: { if: { $eq: ['$count', 1] }, then: '$data.treeGroup', else: '$$REMOVE' },
-          },
-        },
-      },
-    ],
+  const onlyModApprovedTreeGroups = {
+    $match: {
+      $or: [{ moderatorApproved: { $eq: true } }, { 'owner.userId': { $eq: user.user_id } }],
+    },
   };
+
+  const notDeleted = {
+    $match: {
+      $expr: {
+        $ne: ['$delete.isModeratorApproved', true],
+      },
+    },
+  };
+
+  console.log('groupingFactor', groupingFactor);
+
+  const treeGroupsWithinBBox = {
+    $match: {
+      location: {
+        $geoWithin: {
+          $box: [bboxCorners.bottomLeft, bboxCorners.upperRight],
+        },
+      },
+    },
+  };
+
+  const clusteringStages = {
+    geohash: {
+      $project: {
+        _id: 0,
+        geo: {
+          $substr: ['$geohash', 0, groupingFactor],
+        },
+        location: 1,
+        treeGroup: '$$ROOT',
+      },
+    },
+    clusterTreeGroups: {
+      $group: {
+        _id: '$geo',
+        count: {
+          $sum: 1,
+        },
+        lat: {
+          $avg: {
+            $arrayElemAt: ['$location.coordinates', 1],
+          },
+        },
+        lng: {
+          $avg: {
+            $arrayElemAt: ['$location.coordinates', 0],
+          },
+        },
+        data: { $first: '$$ROOT' },
+      },
+    },
+    selectFields: {
+      $project: {
+        _id: 1,
+        count: 1,
+        lat: 1,
+        lng: 1,
+        data: {
+          $cond: { if: { $eq: ['$count', 1] }, then: '$data.treeGroup', else: '$$REMOVE' },
+        },
+      },
+    },
+  };
+
+  const aggregationQuery: any[] = [treeGroupsWithinBBox, notDeleted];
+
+  if (user.role !== roles.MODERATOR) {
+    aggregationQuery.push(onlyModApprovedTreeGroups);
+  }
+
+  aggregationQuery.push(
+    clusteringStages.geohash,
+    clusteringStages.clusterTreeGroups,
+    clusteringStages.selectFields
+  );
 
   const db = MongoClient.db;
   const treeGroups = await db
     .collection('tree-group')
-    .aggregate(aggregation.query)
+    .aggregate(aggregationQuery)
     .toArray();
   return treeGroups;
 };
