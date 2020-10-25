@@ -145,7 +145,6 @@ export const fetchTreeGroups = async (
     });
   }
 
-  // console.log(treeGroups);
   return treeGroups;
 };
 
@@ -463,14 +462,103 @@ export const fetchTreeGroupsV2 = async (bbox: string, zoom: number, user: any) =
   );
 
   const db = MongoClient.db;
-  console.log(JSON.stringify(aggregationQuery));
   const treeGroups = await db
     .collection('tree-group')
     .aggregate(aggregationQuery)
     .toArray();
 
-  console.log();
   return treeGroups;
+};
+
+export const fetchAggregatedTreeGroupData = async (bbox: string, zoom: number, user: any) => {
+  const coordinates = _.map(bbox.split(','), parseFloat);
+  const bboxCorners = {
+    bottomLeft: [coordinates[0], coordinates[1]],
+    upperRight: [coordinates[2], coordinates[3]],
+  };
+
+  const onlyModApprovedTreeGroups = {
+    $match: {
+      $or: [{ moderatorApproved: { $eq: true } }, { 'owner.userId': { $eq: user.user_id } }],
+    },
+  };
+
+  const notDeleted = {
+    $match: {
+      $expr: {
+        $ne: ['$delete.isModeratorApproved', true],
+      },
+    },
+  };
+
+  const treeGroupsWithinBBox = {
+    $match: {
+      location: {
+        $geoWithin: {
+          $box: [bboxCorners.bottomLeft, bboxCorners.upperRight],
+        },
+      },
+    },
+  };
+
+  const aggregationStages = {
+    treesInTreeGroupLookup: {
+      $lookup: {
+        from: 'tree',
+        let: { group_id: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ['$groupId', '$$group_id'] },
+                  { $ne: ['$delete.isModeratorApproved', true] },
+                ],
+              },
+            },
+          },
+        ],
+        as: 'trees',
+      },
+    },
+    filterForTress: {
+      $match: {
+        'trees.0': { $exists: true },
+      },
+    },
+    unwindTrees: {
+      $unwind: {
+        path: '$trees',
+      },
+    },
+    groupByHealthStatus: {
+      $group: {
+        _id: '$health',
+        count: { $sum: 1 },
+      },
+    },
+  };
+
+  const aggregationQuery: any[] = [treeGroupsWithinBBox, notDeleted];
+
+  if (user.role !== roles.MODERATOR) {
+    aggregationQuery.push(onlyModApprovedTreeGroups);
+  }
+
+  aggregationQuery.push(
+    aggregationStages.treesInTreeGroupLookup,
+    aggregationStages.filterForTress,
+    aggregationStages.unwindTrees,
+    aggregationStages.groupByHealthStatus
+  );
+
+  const db = MongoClient.db;
+  const aggregatedTreeGroupData = await db
+    .collection('tree-group')
+    .aggregate(aggregationQuery)
+    .toArray();
+
+  return aggregatedTreeGroupData;
 };
 
 export const waterTreesOfMultipleGroups = (groupIds: [{ id: string }], updateBody: any) => {

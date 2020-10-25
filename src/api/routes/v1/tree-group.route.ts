@@ -7,6 +7,7 @@ import {
   modActionOnTreeGroup,
   getTreeGroupClusters,
   waterMultipleTreeGroups,
+  getAggregatedTreeGroupData,
 } from '../../controllers/tree-group.controller';
 import { permit } from '../../middlewares/permission';
 import multer from '../../../config/multer';
@@ -29,6 +30,7 @@ router
   );
 router.route('/').get(getTreeGroups);
 router.route('/cluster').get(getTreeGroupClusters);
+router.route('/aggregated').get(getAggregatedTreeGroupData);
 router.route('/water').patch(waterMultipleTreeGroups);
 
 router

@@ -229,6 +229,32 @@ export const getTreeGroupClusters = async (req: AuthRequest, res: Response, next
     next(e);
   }
 };
+
+export const getAggregatedTreeGroupData = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { bbox, zoom } = req.query;
+    const aggregatedTreeGroupResponse: any = await TreeGroupService.fetchAggregatedTreeGroupData(
+      bbox,
+      parseInt(zoom),
+      req.user
+    );
+    const aggregatedTreeGroupData: any = {};
+    for (const i in aggregatedTreeGroupResponse) {
+      const { _id, count } = aggregatedTreeGroupResponse[i];
+      if (_id) {
+        aggregatedTreeGroupData[_id] = count;
+      }
+    }
+    res.status(httpStatus.OK).json(aggregatedTreeGroupData);
+  } catch (e) {
+    next(e);
+  }
+};
+
 export const waterMultipleTreeGroups = async (
   req: AuthRequest,
   res: Response,
