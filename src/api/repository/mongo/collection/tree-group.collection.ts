@@ -376,6 +376,33 @@ export const fetchTreeGroupsV2 = async (bbox: string, zoom: number, user: any) =
   };
 
   const clusteringStages = {
+    treesInTreeGroupLookup: {
+      $lookup: {
+        from: 'tree',
+        let: { group_id: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ['$groupId', '$$group_id'] },
+                  { $ne: ['$delete.isModeratorApproved', true] },
+                ],
+              },
+            },
+          },
+          {
+            $group: { _id: 'null', count: { $sum: 1 } },
+          },
+        ],
+        as: 'trees',
+      },
+    },
+    filterForTress: {
+      $match: {
+        'trees.0': { $exists: true },
+      },
+    },
     geohash: {
       $project: {
         _id: 0,
@@ -384,14 +411,16 @@ export const fetchTreeGroupsV2 = async (bbox: string, zoom: number, user: any) =
         },
         location: 1,
         treeGroup: '$$ROOT',
+        treeCount: { $sum: '$trees.count' },
       },
     },
     clusterTreeGroups: {
       $group: {
         _id: '$geo',
-        count: {
+        treeGroupCount: {
           $sum: 1,
         },
+        treeCount: { $sum: '$treeCount' },
         lat: {
           $avg: {
             $arrayElemAt: ['$location.coordinates', 1],
@@ -408,11 +437,12 @@ export const fetchTreeGroupsV2 = async (bbox: string, zoom: number, user: any) =
     selectFields: {
       $project: {
         _id: 1,
-        count: 1,
+        treeGroupCount: 1,
+        treeCount: 1,
         lat: 1,
         lng: 1,
         data: {
-          $cond: { if: { $eq: ['$count', 1] }, then: '$data.treeGroup', else: '$$REMOVE' },
+          $cond: { if: { $eq: ['$treeGroupCount', 1] }, then: '$data.treeGroup', else: '$$REMOVE' },
         },
       },
     },
@@ -425,16 +455,21 @@ export const fetchTreeGroupsV2 = async (bbox: string, zoom: number, user: any) =
   }
 
   aggregationQuery.push(
+    clusteringStages.treesInTreeGroupLookup,
+    clusteringStages.filterForTress,
     clusteringStages.geohash,
     clusteringStages.clusterTreeGroups,
     clusteringStages.selectFields
   );
 
   const db = MongoClient.db;
+  console.log(JSON.stringify(aggregationQuery));
   const treeGroups = await db
     .collection('tree-group')
     .aggregate(aggregationQuery)
     .toArray();
+
+  console.log();
   return treeGroups;
 };
 
