@@ -64,7 +64,7 @@
     "jest": "^24.9.0",
     "joi": "^14.3.1",
     "lint-staged": "^9.4.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "module-alias": "^2.2.2",
     "mongodb": "^3.3.2",
     "multer": "^1.4.2",
