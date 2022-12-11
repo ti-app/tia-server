@@ -52,7 +52,7 @@
     "eslint-config-prettier": "^6.4.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jest": "^23.0.3",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-session": "^1.17.0",
     "express-validation": "^1.0.3",
     "express-winston": "^4.0.1",
